@@ -1,0 +1,20 @@
+{
+  "name": "item-nft",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --runInBand"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.16.0",
+    "@babel/preset-env": "^7.16.4",
+    "babel-jest": "^27.4.2",
+    "flow-js-testing": "^0.1.15",
+    "jest": "^27.4.3",
+    "jest-environment-node": "^27.4.2"
+  }
+}
