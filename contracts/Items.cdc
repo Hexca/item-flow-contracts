@@ -459,9 +459,9 @@ pub contract Items: NonFungibleToken {
     // -----------------------------------------------------------------------
     //
     init() {
-        self.CollectionStoragePath = /storage/ItemsCollection
-        self.ItemsAdminStoragePath = /storage/ItemsAdmin
-        self.CollectionPublicPath = /public/ItemsCollection
+        self.CollectionStoragePath = /storage/ItemsEcosystemCollection
+        self.ItemsAdminStoragePath = /storage/ItemsEcosystemAdmin
+        self.CollectionPublicPath = /public/ItemsEcosystemCollection
 
         self.artistDatas = {}
         self.pieceDatas = {}
