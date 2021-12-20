@@ -1,4 +1,4 @@
-import Item from 0xITEMADDRESS
+import Items from 0xITEMADDRESS
 
 // This script returns all the metadata about the specified piece
 
@@ -6,11 +6,11 @@ import Item from 0xITEMADDRESS
 //
 // pieceID: The unique ID for the piece whose data needs to be read
 
-// Returns: Item.QueryPieceData
+// Returns: Items.QueryPieceData
 
-pub fun main(pieceID: UInt32): Item.QueryPieceData {
+pub fun main(pieceID: UInt32): Items.QueryPieceData {
 
-    let data = Item.getPieceData(pieceID: pieceID)
+    let data = Items.getPieceData(pieceID: pieceID)
         ?? panic("Could not get data for the specified piece ID")
 
     return data

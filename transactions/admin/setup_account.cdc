@@ -1,21 +1,21 @@
 import NonFungibleToken from 0xNONFUNGIBLETOKENADDRESS
-import Item from 0xITEMADDRESS
+import Items from 0xITEMADDRESS
 
-// This transaction configures an account to hold Items.
+// This transaction configures an account to hold Itemss.
 
 transaction {
     prepare(signer: AuthAccount) {
         // if the account doesn't already have a collection
-        if signer.borrow<&Item.Collection>(from: Item.CollectionStoragePath) == nil {
+        if signer.borrow<&Items.Collection>(from: Items.CollectionStoragePath) == nil {
 
             // create a new empty collection
-            let collection <- Item.createEmptyCollection()
+            let collection <- Items.createEmptyCollection()
             
             // save it to the account
-            signer.save(<-collection, to: Item.CollectionStoragePath)
+            signer.save(<-collection, to: Items.CollectionStoragePath)
 
             // create a public capability for the collection
-            signer.link<&Item.Collection{NonFungibleToken.CollectionPublic, Item.ItemCollectionPublic}>(Item.CollectionPublicPath, target: Item.CollectionStoragePath)
+            signer.link<&Items.Collection{NonFungibleToken.CollectionPublic, Items.ItemsCollectionPublic}>(Items.CollectionPublicPath, target: Items.CollectionStoragePath)
         }
     }
 }

@@ -2,20 +2,20 @@ import path from "path";
 import { emulator, init, getAccountAddress, shallPass, shallResolve, shallRevert, shallThrow  } from "flow-js-testing";
 
 
-import { getItemAdminAddress, getItemNonAdminAddress } from "./src/common";
+import { getItemsAdminAddress, getItemsNonAdminAddress } from "./src/common";
 import {
   deployItems,
   createArtist,
   getArtistMetadata,
   createPiece,
   getPieceMetadata,
-  mintItemAdmin,
-  mintItemNonAdmin,
-  getItem,
+  mintItemsAdmin,
+  mintItemsNonAdmin,
+  getItems,
   batchMintItems,
   getTotalSupply,
   setupItemsOnAccount,
-  transferItem,
+  transferItems,
   getCollectionIds,
 } from "./src/items";
 
@@ -71,7 +71,7 @@ describe("basic-test", ()=>{
     });
   });
   
-  it("shall be able to mint an Item", async () => {
+  it("shall be able to mint an Items", async () => {
     // Setup
     await deployItems();
     await shallPass(createArtist({"name":"artist1","description":"artist1 description"}));
@@ -81,19 +81,19 @@ describe("basic-test", ()=>{
 
     const pieceID = 1;
 
-    const address = await getItemAdminAddress();
-    await shallPass(mintItemAdmin(pieceID, address));
+    const address = await getItemsAdminAddress();
+    await shallPass(mintItemsAdmin(pieceID, address));
 
     const itemID = 1;
     await shallResolve(async () => {
-      const data = await getItem(address, itemID);
+      const data = await getItems(address, itemID);
       expect(data.id).toBe(itemID);
       expect(data.data.artistID).toBe(artistID);
       expect(data.data.pieceID).toBe(pieceID);
     });
   });
 
-  it("shall not able to mint an Item, if non-admin", async () => {
+  it("shall not able to mint an Items, if non-admin", async () => {
     // Setup
     await deployItems();
     await shallPass(createArtist({"name":"artist1","description":"artist1 description"}));
@@ -103,12 +103,12 @@ describe("basic-test", ()=>{
 
     const pieceID = 1;
 
-    const address = await getItemAdminAddress();
-    await shallRevert(mintItemNonAdmin(pieceID, address));
+    const address = await getItemsAdminAddress();
+    await shallRevert(mintItemsNonAdmin(pieceID, address));
 
     const itemID = 1;
     await shallRevert(async () => {
-      const data = await getItem(address, itemID);
+      const data = await getItems(address, itemID);
       expect(data.id).toBe(itemID);
       expect(data.data.artistID).toBe(artistID);
       expect(data.data.pieceID).toBe(pieceID);
@@ -125,7 +125,7 @@ describe("basic-test", ()=>{
 
     const pieceID = 1;
     const quantity = 10;
-    const address = await getItemAdminAddress();
+    const address = await getItemsAdminAddress();
     await shallPass(batchMintItems(pieceID, quantity, address));
     
     // const itemID = 1;
@@ -148,32 +148,32 @@ describe("basic-test", ()=>{
 
     const pieceID = 1;
 
-    const adminAddress = await getItemAdminAddress();
-    await shallPass(mintItemAdmin(pieceID, adminAddress));
+    const adminAddress = await getItemsAdminAddress();
+    await shallPass(mintItemsAdmin(pieceID, adminAddress));
 
     const itemID = 1;
     await shallResolve(async () => {
-      const data = await getItem(adminAddress, itemID);
+      const data = await getItems(adminAddress, itemID);
       expect(data.id).toBe(itemID);
       expect(data.data.artistID).toBe(artistID);
       expect(data.data.pieceID).toBe(pieceID);
     });
 
     // set up second account
-    const nonAdminAddress = await getItemNonAdminAddress("");
+    const nonAdminAddress = await getItemsNonAdminAddress("");
     await setupItemsOnAccount(nonAdminAddress);
 
     // transfer to second account
-    await transferItem(adminAddress, nonAdminAddress, itemID)
+    await transferItems(adminAddress, nonAdminAddress, itemID)
 
     // admin no long owns item
     await shallRevert(async () => {
-      await getItem(adminAddress, itemID);
+      await getItems(adminAddress, itemID);
     });
 
     // receiver owns the item
     await shallResolve(async () => {
-      const data = await getItem(nonAdminAddress, itemID);
+      const data = await getItems(nonAdminAddress, itemID);
       expect(data.id).toBe(itemID);
       expect(data.data.artistID).toBe(artistID);
       expect(data.data.pieceID).toBe(pieceID);
@@ -190,40 +190,40 @@ describe("basic-test", ()=>{
 
     const pieceID = 1;
 
-    const adminAddress = await getItemAdminAddress();
-    await shallPass(mintItemAdmin(pieceID, adminAddress));
+    const adminAddress = await getItemsAdminAddress();
+    await shallPass(mintItemsAdmin(pieceID, adminAddress));
 
     const itemID = 1;
     await shallResolve(async () => {
-      const data = await getItem(adminAddress, itemID);
+      const data = await getItems(adminAddress, itemID);
       expect(data.id).toBe(itemID);
       expect(data.data.artistID).toBe(artistID);
       expect(data.data.pieceID).toBe(pieceID);
     });
 
     // set up non-admin accounts
-    const nonAdminAddress0 = await getItemNonAdminAddress("0");
+    const nonAdminAddress0 = await getItemsNonAdminAddress("0");
     await setupItemsOnAccount(nonAdminAddress0);
-    const nonAdminAddress1 = await getItemNonAdminAddress("1");
+    const nonAdminAddress1 = await getItemsNonAdminAddress("1");
     await setupItemsOnAccount(nonAdminAddress1);
 
-    // transfer Item from admin to first account, then from first account to second
-    await transferItem(adminAddress, nonAdminAddress0, itemID)
-    await transferItem(nonAdminAddress0, nonAdminAddress1, itemID)
+    // transfer Items from admin to first account, then from first account to second
+    await transferItems(adminAddress, nonAdminAddress0, itemID)
+    await transferItems(nonAdminAddress0, nonAdminAddress1, itemID)
 
     // admin no long owns item
     await shallRevert(async () => {
-      await getItem(adminAddress, itemID);
+      await getItems(adminAddress, itemID);
     });
 
     // first account doesn't own item
     await shallRevert(async () => {
-      await getItem(nonAdminAddress0, itemID);
+      await getItems(nonAdminAddress0, itemID);
     });
 
     // second account doesn't own item
     await shallResolve(async () => {
-      const data = await getItem(nonAdminAddress1, itemID);
+      const data = await getItems(nonAdminAddress1, itemID);
       expect(data.id).toBe(itemID);
       expect(data.data.artistID).toBe(artistID);
       expect(data.data.pieceID).toBe(pieceID);
@@ -240,7 +240,7 @@ describe("basic-test", ()=>{
 
     const pieceID = 1;
     const quantity = 10;
-    const address = await getItemAdminAddress();
+    const address = await getItemsAdminAddress();
 
     await shallPass(batchMintItems(pieceID, quantity, address));
     await shallResolve(async () => {

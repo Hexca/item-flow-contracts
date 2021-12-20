@@ -7,13 +7,13 @@
 	},
 	"contracts": {
 		"NonFungibleToken": {
-			"source": "../Item/contracts/NonFungibleToken.cdc",
+			"source": "../contracts/NonFungibleToken.cdc",
 			"aliases": {
 			  "emulator": "0xf8d6e0586b0a20c7"
 			}
 		  },
-		  "Item": {
-			"source": "../Item/contracts/Item.cdc",
+		  "Items": {
+			"source": "../contracts/Items.cdc",
 			"aliases": {
 			  "emulator": "0xf8d6e0586b0a20c7"
 			}
@@ -33,7 +33,7 @@
 		"emulator": {
 			"emulator-account": [
 				"NonFungibleToken",
-				"Item"
+				"Items"
 			]
 		}
 	}

@@ -1,8 +1,8 @@
 import { deployContractByName, executeScript, mintFlow, sendTransaction } from "flow-js-testing";
 
 import {
-	getItemAdminAddress,
-	getItemNonAdminAddress,
+	getItemsAdminAddress,
+	getItemsNonAdminAddress,
 } from "./common";
 
 // Items types
@@ -14,13 +14,13 @@ export const typeID1 = 1000;
  * @returns {Promise<*>}
  * */
 export const deployItems = async () => {
-	const Admin = await getItemAdminAddress();
+	const Admin = await getItemsAdminAddress();
 	await mintFlow(Admin, "10.0");
 
 	await deployContractByName({ to: Admin, name: "NonFungibleToken" });
 
 	const addressMap = { NonFungibleToken: Admin };
-	return deployContractByName({ to: Admin, name: "Item", addressMap });
+	return deployContractByName({ to: Admin, name: "Items", addressMap });
 };
 
 /*
@@ -50,7 +50,7 @@ export const getTotalSupply = async () => {
 
 export const createArtist = async (metadata) => {
 
-	const Admin = await getItemAdminAddress();
+	const Admin = await getItemsAdminAddress();
 	const name = "admin/create_artist";
 	const args = [metadata];
 	const signers = [Admin];
@@ -60,7 +60,7 @@ export const createArtist = async (metadata) => {
 
 export const getArtistMetadata = async (id) => {
 
-	const Admin = await getItemAdminAddress();
+	const Admin = await getItemsAdminAddress();
 
 	const name = "artists/get_artist_metadata";
 	const args = [id];
@@ -71,7 +71,7 @@ export const getArtistMetadata = async (id) => {
 
 export const createPiece = async (artistID, metadata) => {
 
-	const Admin = await getItemAdminAddress();
+	const Admin = await getItemsAdminAddress();
 	const name = "admin/create_piece";
 	const args = [artistID, metadata];
 	const signers = [Admin];
@@ -81,7 +81,7 @@ export const createPiece = async (artistID, metadata) => {
 
 export const getPieceMetadata = async (id) => {
 
-	const Admin = await getItemAdminAddress();
+	const Admin = await getItemsAdminAddress();
 
 	const name = "pieces/get_piece_data";
 	const args = [id];
@@ -90,8 +90,8 @@ export const getPieceMetadata = async (id) => {
 	return executeScript({ name, args, signers });
 };
 
-export const mintItemAdmin = async (pieceID, recipient) => {
-	const Admin = await getItemAdminAddress();
+export const mintItemsAdmin = async (pieceID, recipient) => {
+	const Admin = await getItemsAdminAddress();
 
 	const name = "admin/mint_item";
 	const args = [pieceID, recipient];
@@ -100,8 +100,8 @@ export const mintItemAdmin = async (pieceID, recipient) => {
 	return sendTransaction({ name, args, signers });
 };
 
-export const mintItemNonAdmin = async (pieceID, recipient) => {
-	const nonAdmin = await getItemNonAdminAddress();
+export const mintItemsNonAdmin = async (pieceID, recipient) => {
+	const nonAdmin = await getItemsNonAdminAddress();
 
 	const name = "admin/mint_item";
 	const args = [pieceID, recipient];
@@ -111,7 +111,7 @@ export const mintItemNonAdmin = async (pieceID, recipient) => {
 };
 
 export const batchMintItems = async (pieceID, quantity, recipient) => {
-	const Admin = await getItemAdminAddress();
+	const Admin = await getItemsAdminAddress();
 
 	const name = "admin/batch_mint_item";
 	const args = [pieceID, quantity, recipient];
@@ -120,7 +120,7 @@ export const batchMintItems = async (pieceID, quantity, recipient) => {
 	return sendTransaction({ name, args, signers });
 };
 
-export const transferItem = async (sender, recipient, itemId) => {
+export const transferItems = async (sender, recipient, itemId) => {
 	const name = "admin/transfer_item";
 	const args = [recipient, itemId];
 	const signers = [sender];
@@ -128,7 +128,7 @@ export const transferItem = async (sender, recipient, itemId) => {
 	return sendTransaction({ name, args, signers });
 };
 
-export const getItem = async (account, itemID) => {
+export const getItems = async (account, itemID) => {
 	const name = "collections/get_item";
 	const args = [account, itemID];
 

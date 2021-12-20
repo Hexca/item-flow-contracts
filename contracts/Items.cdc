@@ -1,20 +1,20 @@
 
 import NonFungibleToken from "./NonFungibleToken.cdc"
 
-pub contract Item: NonFungibleToken {
+pub contract Items: NonFungibleToken {
 
     // -----------------------------------------------------------------------
     // Public named paths
     // -----------------------------------------------------------------------
     pub let CollectionStoragePath: StoragePath
-    pub let ItemAdminStoragePath: StoragePath
+    pub let ItemsAdminStoragePath: StoragePath
     pub let CollectionPublicPath: PublicPath
 
     // -----------------------------------------------------------------------
     // Public events
     // -----------------------------------------------------------------------
 
-    // Emitted when the Item contract is created
+    // Emitted when the Items contract is created
     pub event ContractInitialized()
 
     // Emitted when a new Artist struct is created
@@ -26,8 +26,8 @@ pub contract Item: NonFungibleToken {
     // Emitted when a Piece is locked, meaning Piece cannot be added
     pub event PieceLocked(pieceID: UInt32)
 
-    // Emitted when a Item is minted from a Piece
-    pub event ItemMinted(itemID: UInt64, artistID: UInt32, pieceID: UInt32, serialNumber: UInt32)
+    // Emitted when a Items is minted from a Piece
+    pub event ItemsMinted(itemID: UInt64, artistID: UInt32, pieceID: UInt32, serialNumber: UInt32)
 
     // Emitted when a item is withdrawn from a Collection
     pub event Withdraw(id: UInt64, from: Address?)
@@ -35,11 +35,11 @@ pub contract Item: NonFungibleToken {
     // Emitted when a item is deposited into a Collection
     pub event Deposit(id: UInt64, to: Address?)
 
-    // Emitted when a Item is destroyed
-    pub event ItemDestroyed(id: UInt64)
+    // Emitted when a Items is destroyed
+    pub event ItemsDestroyed(id: UInt64)
 
     // -----------------------------------------------------------------------
-    // Item contract-level fields.
+    // Items contract-level fields.
     // These contain actual values that are stored in the smart contract.
     // -----------------------------------------------------------------------
 
@@ -58,7 +58,7 @@ pub contract Item: NonFungibleToken {
     // The ID that is used to create Pieces. 
     pub var nextPieceID: UInt32
 
-    // The total number of Item NFTs that have been created
+    // The total number of Items NFTs that have been created
     pub var totalSupply: UInt64
 
     
@@ -74,7 +74,7 @@ pub contract Item: NonFungibleToken {
             pre {
                 metadata.length != 0: "New Play metadata cannot be empty"
             }
-            self.artistID = Item.nextArtistID
+            self.artistID = Items.nextArtistID
             self.metadata = metadata
         }
     }
@@ -92,7 +92,7 @@ pub contract Item: NonFungibleToken {
             pre {
                 metadata.length != 0: "New Piece metadata cannot be empty"
             }
-            self.pieceID = Item.nextPieceID
+            self.pieceID = Items.nextPieceID
             self.metadata = metadata
         }
     }
@@ -107,16 +107,16 @@ pub contract Item: NonFungibleToken {
 
         pub var locked: Bool
 
-        // The number of Items minted by using this Piece
+        // The number of Itemss minted by using this Piece
         access(contract) var numberMinted: UInt32 // serial number
 
         init(artistID: UInt32, metadata: {String: String}) {
-            self.pieceID = Item.nextPieceID
+            self.pieceID = Items.nextPieceID
             self.artistID = artistID
             self.locked = false
             self.numberMinted = 0
             // Create a new PieceData for this Set Piece store it in contract storage
-            Item.pieceDatas[self.pieceID] = PieceData(metadata: metadata)
+            Items.pieceDatas[self.pieceID] = PieceData(metadata: metadata)
         }
 
 
@@ -127,26 +127,26 @@ pub contract Item: NonFungibleToken {
             }
         }
 
-        pub fun mintItem(): @NFT {
+        pub fun mintItems(): @NFT {
             
             // Mint the new item
-            let newItem: @NFT <- create NFT(serialNumber: self.numberMinted + (1 as UInt32),
+            let newItems: @NFT <- create NFT(serialNumber: self.numberMinted + (1 as UInt32),
                                               artistID: self.artistID,
                                               pieceID: self.pieceID)
 
-            // Increment the count of Items minted for this Piece
+            // Increment the count of Itemss minted for this Piece
             self.numberMinted = self.numberMinted + (1 as UInt32)
-            emit ItemMinted(itemID: newItem.id, artistID: self.artistID, pieceID: self.pieceID, serialNumber:self.numberMinted)
-            return <-newItem
+            emit ItemsMinted(itemID: newItems.id, artistID: self.artistID, pieceID: self.pieceID, serialNumber:self.numberMinted)
+            return <-newItems
         }
 
        
-        pub fun batchMintItem(quantity: UInt64): @Collection {
+        pub fun batchMintItems(quantity: UInt64): @Collection {
             let newCollection <- create Collection()
 
             var i: UInt64 = 0
             while i < quantity {
-                newCollection.deposit(token: <-self.mintItem())
+                newCollection.deposit(token: <-self.mintItems())
                 i = i + (1 as UInt64)
             }
 
@@ -172,8 +172,8 @@ pub contract Item: NonFungibleToken {
 
         init(pieceID: UInt32) {
 
-            let piece = &Item.pieces[pieceID] as &Piece
-            let pieceData = Item.pieceDatas[pieceID] as PieceData?
+            let piece = &Items.pieces[pieceID] as &Piece
+            let pieceData = Items.pieceDatas[pieceID] as PieceData?
 
             self.pieceID = pieceID
             self.metadata = pieceData!.metadata
@@ -192,11 +192,11 @@ pub contract Item: NonFungibleToken {
     }
 
 
-    pub struct ItemData {
+    pub struct ItemsData {
 
-        // The ID of the Piece that the Item comes from
+        // The ID of the Piece that the Items comes from
         pub let pieceID: UInt32
-        // The ID of the Artist that the Item comes from
+        // The ID of the Artist that the Items comes from
         pub let artistID: UInt32
 
         pub let serialNumber: UInt32
@@ -212,26 +212,26 @@ pub contract Item: NonFungibleToken {
     // total supply id is global
     pub resource NFT: NonFungibleToken.INFT {
 
-        // Global unique Item ID
+        // Global unique Items ID
         pub let id: UInt64
         
-        // Struct of Item metadata
-        pub let data: ItemData
+        // Struct of Items metadata
+        pub let data: ItemsData
 
         init(serialNumber: UInt32, artistID: UInt32, pieceID: UInt32) {
-            // Increment the global Item IDs
-            Item.totalSupply = Item.totalSupply + (1 as UInt64)
+            // Increment the global Items IDs
+            Items.totalSupply = Items.totalSupply + (1 as UInt64)
 
-            self.id = Item.totalSupply
+            self.id = Items.totalSupply
 
             // piece the metadata struct
-            self.data = ItemData(pieceID: pieceID, artistID: artistID, serialNumber: serialNumber)
+            self.data = ItemsData(pieceID: pieceID, artistID: artistID, serialNumber: serialNumber)
         }
 
-        // If the Item is destroyed, emit an event to indicate 
+        // If the Items is destroyed, emit an event to indicate 
         // to outside ovbservers that it has been destroyed
         destroy() {
-            emit ItemDestroyed(id: self.id)
+            emit ItemsDestroyed(id: self.id)
         }
     }
 
@@ -244,12 +244,12 @@ pub contract Item: NonFungibleToken {
             let newID = newArtist.artistID
 
             // Increment the ID so that it isn't used again
-            Item.nextArtistID = Item.nextArtistID + (1 as UInt32)
+            Items.nextArtistID = Items.nextArtistID + (1 as UInt32)
 
             emit ArtistCreated(id: newArtist.artistID, metadata: metadata)
 
             // Store it in the Artists mapping field
-            Item.artistDatas[newID] = newArtist
+            Items.artistDatas[newID] = newArtist
 
             return newID
         }
@@ -260,26 +260,26 @@ pub contract Item: NonFungibleToken {
             var newPiece <- create Piece(artistID:artistID, metadata: metadata)
 
             // Increment the PieceID so that it isn't used again
-            Item.nextPieceID = Item.nextPieceID + (1 as UInt32)
+            Items.nextPieceID = Items.nextPieceID + (1 as UInt32)
 
             let newID = newPiece.pieceID
 
             emit PieceCreated(pieceID: newID, artistID: artistID, metadata: metadata)
 
             // Store it in the Pieces mapping field
-            Item.pieces[newID] <-! newPiece
+            Items.pieces[newID] <-! newPiece
 
             return newID
         }
 
         pub fun borrowPiece(pieceID: UInt32): &Piece {
             pre {
-                Item.pieces[pieceID] != nil: "Cannot borrow piece: The piece doesn't exist"
+                Items.pieces[pieceID] != nil: "Cannot borrow piece: The piece doesn't exist"
             }
             
             // Get a reference to the pice and return it
             // use `&` to indicate the reference to the object and type
-            return &Item.pieces[pieceID] as &Piece
+            return &Items.pieces[pieceID] as &Piece
         }
 
         // createNewAdmin creates a new Admin resource
@@ -289,21 +289,21 @@ pub contract Item: NonFungibleToken {
         }
     }
 
-    pub resource interface ItemCollectionPublic {
+    pub resource interface ItemsCollectionPublic {
         pub fun deposit(token: @NonFungibleToken.NFT)
         pub fun batchDeposit(tokens: @NonFungibleToken.Collection)
         pub fun getIDs(): [UInt64]
         pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT
-        pub fun borrowItem(id: UInt64): &Item.NFT? {
+        pub fun borrowItems(id: UInt64): &Items.NFT? {
             post {
                 (result == nil) || (result?.id == id): 
-                    "Cannot borrow Item reference: The ID of the returned reference is incorrect"
+                    "Cannot borrow Items reference: The ID of the returned reference is incorrect"
             }
         }
     }
 
-    pub resource Collection: ItemCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic { 
-        // Dictionary of Item conforming tokens
+    pub resource Collection: ItemsCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic { 
+        // Dictionary of Items conforming tokens
         // NFT is a resource type with a UInt64 ID field
         pub var ownedNFTs: @{UInt64: NonFungibleToken.NFT}
 
@@ -311,7 +311,7 @@ pub contract Item: NonFungibleToken {
             self.ownedNFTs <- {}
         }
 
-        // withdraw removes an Item from the Collection and moves it to the caller
+        // withdraw removes an Items from the Collection and moves it to the caller
         //
         // Parameters: withdrawID: The ID of the NFT 
         // that is to be removed from the Collection
@@ -321,7 +321,7 @@ pub contract Item: NonFungibleToken {
 
             // Remove the nft from the Collection
             let token <- self.ownedNFTs.remove(key: withdrawID) 
-                ?? panic("Cannot withdraw: Item does not exist in the collection")
+                ?? panic("Cannot withdraw: Items does not exist in the collection")
 
             emit Withdraw(id: token.id, from: self.owner?.address)
             
@@ -334,7 +334,7 @@ pub contract Item: NonFungibleToken {
         // Parameters: ids: An array of IDs to withdraw
         //
         // Returns: @NonFungibleToken.Collection: A collection that contains
-        //                                        the withdrawn Items
+        //                                        the withdrawn Itemss
         //
         pub fun batchWithdraw(ids: [UInt64]): @NonFungibleToken.Collection {
             // Create a new empty Collection
@@ -355,9 +355,9 @@ pub contract Item: NonFungibleToken {
         //
         pub fun deposit(token: @NonFungibleToken.NFT) {
             
-            // Cast the deposited token as a Item NFT to make sure
+            // Cast the deposited token as a Items NFT to make sure
             // it is the correct type
-            let token <- token as! @Item.NFT
+            let token <- token as! @Items.NFT
 
             // Get the token's ID
             let id = token.id
@@ -396,7 +396,7 @@ pub contract Item: NonFungibleToken {
             return self.ownedNFTs.keys
         }
 
-        // borrowNFT Returns a borrowed reference to an Item in the Collection
+        // borrowNFT Returns a borrowed reference to an Items in the Collection
         // so that the caller can read its ID
         //
         // Parameters: id: The ID of the NFT to get the reference for
@@ -407,15 +407,15 @@ pub contract Item: NonFungibleToken {
             return &self.ownedNFTs[id] as &NonFungibleToken.NFT
         }
 
-        // borrowItem returns a borrowed reference to an Item
+        // borrowItems returns a borrowed reference to an Items
         //
         // Parameters: id: The ID of the NFT to get the reference for
         //
         // Returns: A reference to the NFT
-        pub fun borrowItem(id: UInt64): &Item.NFT? {
+        pub fun borrowItems(id: UInt64): &Items.NFT? {
             if self.ownedNFTs[id] != nil {
                 let ref = &self.ownedNFTs[id] as auth &NonFungibleToken.NFT
-                return ref as! &Item.NFT
+                return ref as! &Items.NFT
             } else {
                 return nil
             }
@@ -427,22 +427,22 @@ pub contract Item: NonFungibleToken {
     }
     
     pub fun createEmptyCollection(): @NonFungibleToken.Collection {
-        return <-create Item.Collection()
+        return <-create Items.Collection()
     }
 
    
-    pub fun getAllArtists(): [Item.Artist] {
-        return Item.artistDatas.values
+    pub fun getAllArtists(): [Items.Artist] {
+        return Items.artistDatas.values
     }
 
     
     pub fun getArtistMetaData(artistID: UInt32): {String: String}? {
-        return Item.artistDatas[artistID]?.metadata
+        return Items.artistDatas[artistID]?.metadata
     }
 
 
     pub fun getPieceData(pieceID: UInt32): QueryPieceData? {
-        if Item.pieces[pieceID] == nil {
+        if Items.pieces[pieceID] == nil {
             return nil
         } else {
             return QueryPieceData(pieceID: pieceID)
@@ -451,17 +451,17 @@ pub contract Item: NonFungibleToken {
 
     pub fun isPieceLocked(pieceID: UInt32): Bool? {
         // Don't force a revert if the pieceID is invalid
-        return Item.pieces[pieceID]?.locked
+        return Items.pieces[pieceID]?.locked
     }
 
     // -----------------------------------------------------------------------
-    // Item initialization function
+    // Items initialization function
     // -----------------------------------------------------------------------
     //
     init() {
-        self.CollectionStoragePath = /storage/ItemCollection
-        self.ItemAdminStoragePath = /storage/ItemAdmin
-        self.CollectionPublicPath = /public/ItemCollection
+        self.CollectionStoragePath = /storage/ItemsCollection
+        self.ItemsAdminStoragePath = /storage/ItemsAdmin
+        self.CollectionPublicPath = /public/ItemsCollection
 
         self.artistDatas = {}
         self.pieceDatas = {}
@@ -474,10 +474,10 @@ pub contract Item: NonFungibleToken {
         self.account.save<@Collection>(<- create Collection(), to: self.CollectionStoragePath)
 
         // Create a public capability for the Collection
-        self.account.link<&{ItemCollectionPublic}>(self.CollectionPublicPath, target: self.CollectionStoragePath)
+        self.account.link<&{ItemsCollectionPublic}>(self.CollectionPublicPath, target: self.CollectionStoragePath)
 
         // Put the Admin in storage
-        self.account.save<@Admin>(<- create Admin(), to: self.ItemAdminStoragePath)
+        self.account.save<@Admin>(<- create Admin(), to: self.ItemsAdminStoragePath)
 
         emit ContractInitialized()
     }

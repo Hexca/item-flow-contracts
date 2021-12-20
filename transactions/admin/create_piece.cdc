@@ -1,4 +1,4 @@
-import Item from 0xITEMADDRESS
+import Items from 0xITEMADDRESS
 
 // This transaction is for the admin to create a new piece resource
 // and store it in the top shot smart contract
@@ -10,15 +10,15 @@ import Item from 0xITEMADDRESS
 transaction(artistID: UInt32, metadata: {String: String}) {
     
     // Local variable for the item Admin object
-    let adminRef: &Item.Admin
+    let adminRef: &Items.Admin
     let currPieceID: UInt32
 
     prepare(acct: AuthAccount) {
 
         // borrow a reference to the Admin resource in storage
-        self.adminRef = acct.borrow<&Item.Admin>(from: Item.ItemAdminStoragePath)
+        self.adminRef = acct.borrow<&Items.Admin>(from: Items.ItemsAdminStoragePath)
             ?? panic("Could not borrow a reference to the Admin resource")
-        self.currPieceID = Item.nextPieceID;
+        self.currPieceID = Items.nextPieceID;
     }
 
     execute {
@@ -29,7 +29,7 @@ transaction(artistID: UInt32, metadata: {String: String}) {
 
     post {
         
-        Item.getPieceData(pieceID: self.currPieceID) != nil:
+        Items.getPieceData(pieceID: self.currPieceID) != nil:
             "pieceID does not exist"
     }
 }

@@ -1,14 +1,14 @@
-import Item from 0xITEMADDRESS
+import Items from 0xITEMADDRESS
 
-// This script reads the next Piece ID from the Item contract and 
+// This script reads the next Piece ID from the Items contract and 
 // returns that number to the caller
 
 // Returns: UInt32
-// Value of nextPieceID field in Item contract
+// Value of nextPieceID field in Items contract
 
 pub fun main(): UInt32 {
 
-    log(Item.nextPieceID)
+    log(Items.nextPieceID)
 
-    return Item.nextPieceID
+    return Items.nextPieceID
 }

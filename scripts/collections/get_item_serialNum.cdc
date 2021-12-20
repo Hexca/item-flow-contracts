@@ -1,4 +1,4 @@
-import Item from 0xITEMADDRESS
+import Items from 0xITEMADDRESS
 
 // This script gets the serial number of a item
 // by borrowing a reference to the item 
@@ -14,11 +14,11 @@ import Item from 0xITEMADDRESS
 
 pub fun main(account: Address, id: UInt64): UInt32 {
 
-    let collectionRef = getAccount(account).getCapability(Item.CollectionPublicPath)
-        .borrow<&{Item.ItemCollectionPublic}>()
+    let collectionRef = getAccount(account).getCapability(Items.CollectionPublicPath)
+        .borrow<&{Items.ItemsCollectionPublic}>()
         ?? panic("Could not get public item collection reference")
 
-    let token = collectionRef.borrowItem(id: id)
+    let token = collectionRef.borrowItems(id: id)
         ?? panic("Could not borrow a reference to the specified item")
 
     let data = token.data

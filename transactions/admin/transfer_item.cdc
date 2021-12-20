@@ -1,7 +1,7 @@
 import NonFungibleToken from 0xNONFUNGIBLETOKENADDRESS
-import Item from 0xITEMADDRESS
+import Items from 0xITEMADDRESS
 
-// This transaction transfers an Item from one account to another.
+// This transaction transfers an Items from one account to another.
 
 transaction(recipient: Address, withdrawID: UInt64) {
     prepare(signer: AuthAccount) {
@@ -10,11 +10,11 @@ transaction(recipient: Address, withdrawID: UInt64) {
         let recipient = getAccount(recipient)
 
         // borrow a reference to the signer's NFT collection
-        let collectionRef = signer.borrow<&Item.Collection>(from: Item.CollectionStoragePath)
+        let collectionRef = signer.borrow<&Items.Collection>(from: Items.CollectionStoragePath)
             ?? panic("Could not borrow a reference to the owner's collection")
 
         // borrow a public reference to the receivers collection
-        let depositRef = recipient.getCapability(Item.CollectionPublicPath)!.borrow<&{NonFungibleToken.CollectionPublic}>()!
+        let depositRef = recipient.getCapability(Items.CollectionPublicPath)!.borrow<&{NonFungibleToken.CollectionPublic}>()!
 
         // withdraw the NFT from the owner's collection
         let nft <- collectionRef.withdraw(withdrawID: withdrawID)

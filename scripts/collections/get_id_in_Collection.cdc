@@ -1,4 +1,4 @@
-import Item from 0xITEMADDRESS
+import Items from 0xITEMADDRESS
 
 // This script returns true if a item with the specified ID
 // exists in a user's collection
@@ -13,8 +13,8 @@ import Item from 0xITEMADDRESS
 
 pub fun main(account: Address, id: UInt64): Bool {
 
-    let collectionRef = getAccount(account).getCapability(Item.CollectionPublicPath)
-        .borrow<&{Item.ItemCollectionPublic}>()
+    let collectionRef = getAccount(account).getCapability(Items.CollectionPublicPath)
+        .borrow<&{Items.ItemsCollectionPublic}>()
         ?? panic("Could not get public item collection reference")
 
     return collectionRef.borrowNFT(id: id) != nil

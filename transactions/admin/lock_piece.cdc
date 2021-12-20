@@ -1,4 +1,4 @@
-import Item from 0xITEMADDRESS
+import Items from 0xITEMADDRESS
 
 // This transaction locks a piece
 
@@ -9,11 +9,11 @@ import Item from 0xITEMADDRESS
 transaction(pieceID: UInt32) {
 
     // local variable for the admin resource
-    let adminRef: &Item.Admin
+    let adminRef: &Items.Admin
 
     prepare(acct: AuthAccount) {
         // borrow a reference to the admin resource
-        self.adminRef = acct.borrow<&Item.Admin>(from: Item.ItemAdminStoragePath)
+        self.adminRef = acct.borrow<&Items.Admin>(from: Items.ItemsAdminStoragePath)
             ?? panic("No admin resource in storage")
     }
 
@@ -27,7 +27,7 @@ transaction(pieceID: UInt32) {
 
     post {
         
-        Item.isPieceLocked(pieceID: pieceID)!:
+        Items.isPieceLocked(pieceID: pieceID)!:
             "Piece did not lock"
     }
 }

@@ -1,4 +1,4 @@
-import Item from 0xITEMADDRESS
+import Items from 0xITEMADDRESS
 
 // This is the script to get a list of all the items' ids an account owns
 // Just change the argument to `getAccount` to whatever account you want
@@ -16,8 +16,8 @@ pub fun main(account: Address): [UInt64] {
 
     let acct = getAccount(account)
 
-    let collectionRef = acct.getCapability(Item.CollectionPublicPath)
-                            .borrow<&{Item.ItemCollectionPublic}>()!
+    let collectionRef = acct.getCapability(Items.CollectionPublicPath)
+                            .borrow<&{Items.ItemsCollectionPublic}>()!
 
     log(collectionRef.getIDs())
 

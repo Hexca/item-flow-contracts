@@ -1,4 +1,4 @@
-import Item from 0xITEMADDRESS
+import Items from 0xITEMADDRESS
 
 // This script returns a boolean indicating if the specified piece is locked
 // meaning new plays cannot be added to it
@@ -12,7 +12,7 @@ import Item from 0xITEMADDRESS
 
 pub fun main(pieceID: UInt32): Bool {
 
-    let isLocked = Item.isPieceLocked(pieceID: pieceID)
+    let isLocked = Items.isPieceLocked(pieceID: pieceID)
         ?? panic("Could not find the specified piece")
 
     return isLocked

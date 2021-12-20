@@ -1,10 +1,10 @@
-import Item from 0xITEMADDRESS
+import Items from 0xITEMADDRESS
 
 // This script returns an array of all the artists 
 
-// Returns: [Item.Artist]
+// Returns: [Items.Artist]
 
-pub fun main(): [Item.Artist] {
+pub fun main(): [Items.Artist] {
 
-    return Item.getAllArtists()
+    return Items.getAllArtists()
 }

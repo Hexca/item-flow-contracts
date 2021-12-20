@@ -1,6 +1,6 @@
-# Item NFT Ecosystem
+# Items NFT Ecosystem
 
-`Item` is an ecosystem to onboard the next generation of NFT collectors. NFT
+`Items` is an ecosystem to onboard the next generation of NFT collectors. NFT
 vendors and artists can create and sell NFTs with near zero friction through
 one of our adapters and NFT collectors can purchase NFTs without interacting
 with a blockchain or cryptocurrency until they want or need to.
@@ -9,13 +9,13 @@ with a blockchain or cryptocurrency until they want or need to.
 
 | Contract     | Testnet              | Mainnet              |
 |--------------|----------------------|----------------------|
-| Item         | `0x3a74affa1231ce18` | `TBD`                |
+| Items        | `0x3a74affa1231ce18` | `TBD`                |
 
 ## Contracts
 
-`Item`: The main contract for creating NFTs
+`Items`: The main contract for creating NFTs
 
-* `@Piece`: created by an artist and can have `Item.NFT`s minted from it until locked.
+* `@Piece`: created by an artist and can have `Items.NFT`s minted from it until locked.
     `Piece`s contain metadata.
 
 * `@NFT`: the main NFT resource. It contains references to the `Piece` it belongs to and

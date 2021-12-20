@@ -1,4 +1,4 @@
-import Item from 0xITEMADDRESS
+import Items from 0xITEMADDRESS
 
 // This transaction is what an admin would use to mint a single new item
 // and deposit it in a user's collection
@@ -10,11 +10,11 @@ import Item from 0xITEMADDRESS
 
 transaction(pieceID: UInt32, recipientAddr: Address) {
     // local variable for the admin reference
-    let adminRef: &Item.Admin
+    let adminRef: &Items.Admin
 
     prepare(acct: AuthAccount) {
         // borrow a reference to the Admin resource in storage
-        self.adminRef = acct.borrow<&Item.Admin>(from: Item.ItemAdminStoragePath)!
+        self.adminRef = acct.borrow<&Items.Admin>(from: Items.ItemsAdminStoragePath)!
     }
 
     execute {
@@ -22,13 +22,13 @@ transaction(pieceID: UInt32, recipientAddr: Address) {
         let pieceRef = self.adminRef.borrowPiece(pieceID: pieceID)
 
         // Mint a new NFT
-        let item1 <- pieceRef.mintItem()
+        let item1 <- pieceRef.mintItems()
 
         // get the public account object for the recipient
         let recipient = getAccount(recipientAddr)
 
         // get the Collection reference for the receiver
-        let receiverRef = recipient.getCapability(Item.CollectionPublicPath).borrow<&{Item.ItemCollectionPublic}>()
+        let receiverRef = recipient.getCapability(Items.CollectionPublicPath).borrow<&{Items.ItemsCollectionPublic}>()
             ?? panic("Cannot borrow a reference to the recipient's item collection")
 
         // deposit the NFT in the receivers collection

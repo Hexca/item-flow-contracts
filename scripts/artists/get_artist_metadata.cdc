@@ -1,7 +1,7 @@
-import Item from 0xITEMADDRESS
+import Items from 0xITEMADDRESS
 
 // This script returns the full metadata associated with an artist
-// in the Item smart contract
+// in the Items smart contract
 
 // Parameters:
 //
@@ -13,7 +13,7 @@ import Item from 0xITEMADDRESS
 
 pub fun main(artistID: UInt32): {String:String} {
 
-    let metadata = Item.getArtistMetaData(artistID: artistID) ?? panic("Artist doesn't exist")
+    let metadata = Items.getArtistMetaData(artistID: artistID) ?? panic("Artist doesn't exist")
 
     log(metadata)
 

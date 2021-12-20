@@ -1,13 +1,13 @@
-import Item from 0xITEMADDRESS
+import Items from 0xITEMADDRESS
 
-// This script reads the public nextArtistID from the Item contract
+// This script reads the public nextArtistID from the Items contract
 
 // Returns: UInt32
-// the nextArtistID field in Item contract
+// the nextArtistID field in Items contract
 
 pub fun main(): UInt32 {
 
-    log(Item.nextArtistID)
+    log(Items.nextArtistID)
 
-    return Item.nextArtistID
+    return Items.nextArtistID
 }

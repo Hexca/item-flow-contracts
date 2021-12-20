@@ -1,8 +1,8 @@
-import Item from 0xITEMADDRESS
+import Items from 0xITEMADDRESS
 
 // This script gets the metadata associated with an artist
 // in a collection by looking up its playID and then searching
-// for that play's metadata in the Item contract
+// for that play's metadata in the Items contract
 
 // Parameters:
 //
@@ -17,19 +17,19 @@ pub fun main(account: Address, id: UInt64): {String: String} {
 
     // get the public capability for the owner's item collection
     // and borrow a reference to it
-    let collectionRef = getAccount(account).getCapability(Item.CollectionPublicPath)
-        .borrow<&{Item.ItemCollectionPublic}>()
+    let collectionRef = getAccount(account).getCapability(Items.CollectionPublicPath)
+        .borrow<&{Items.ItemsCollectionPublic}>()
         ?? panic("Could not get public item collection reference")
 
     // Borrow a reference to the specified item
-    let token = collectionRef.borrowItem(id: id)
+    let token = collectionRef.borrowItems(id: id)
         ?? panic("Could not borrow a reference to the specified item")
 
     let data = token.data
 
     // Use the item's artist ID 
     // to get all the metadata associated with that artist
-    let metadata = Item.getArtistMetaData(artistID: data.artistID) ?? panic("Artist doesn't exist")
+    let metadata = Items.getArtistMetaData(artistID: data.artistID) ?? panic("Artist doesn't exist")
 
     log(metadata)
 

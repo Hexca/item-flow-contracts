@@ -1,7 +1,7 @@
-import Item from 0xITEMADDRESS
+import Items from 0xITEMADDRESS
 
 // This transaction creates a new artist 
-// and stores it in the Item smart contract
+// and stores it in the Items smart contract
 // We currently stringify the metadata and insert it into the 
 // transaction string, but want to use transaction arguments soon
 
@@ -11,15 +11,15 @@ import Item from 0xITEMADDRESS
 
 transaction(metadata: {String: String}) {
 
-    // Local variable for the Item Admin object
-    let adminRef: &Item.Admin
+    // Local variable for the Items Admin object
+    let adminRef: &Items.Admin
     let currArtistID: UInt32
 
     prepare(acct: AuthAccount) {
 
         // borrow a reference to the admin resource
-        self.currArtistID = Item.nextArtistID;
-        self.adminRef = acct.borrow<&Item.Admin>(from: Item.ItemAdminStoragePath)
+        self.currArtistID = Items.nextArtistID;
+        self.adminRef = acct.borrow<&Items.Admin>(from: Items.ItemsAdminStoragePath)
             ?? panic("No admin resource in storage")
     }
 
@@ -31,7 +31,7 @@ transaction(metadata: {String: String}) {
 
     post {
         
-        Item.getArtistMetaData(artistID: self.currArtistID) != nil:
+        Items.getArtistMetaData(artistID: self.currArtistID) != nil:
             "artistID doesnt exist"
     }
 }
