@@ -1,7 +1,7 @@
 import NonFungibleToken from "../../contracts/NonFungibleToken.cdc"
 import Items from "../../contracts/Items.cdc"
 
-// This transaction transfers a Kitty Item from one account to another.
+// This transaction transfers an Item from one account to another.
 
 transaction(recipient: Address, withdrawID: UInt64) {
     prepare(signer: AuthAccount) {

@@ -1,5 +1,5 @@
 {
-	"name": "kitty-items-cadence-testing",
+	"name": "items-cadence-testing",
 	"version": "0.0.1",
 	"description": "Integration tests for Kitty Items using Flow JS Testing Framework",
 	"main": "index.js",
@@ -8,14 +8,14 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/onflow/kitty-items.git"
+		"url": "git+https://github.com/onflow/items.git"
 	},
 	"author": "Max Daunarovich",
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/onflow/kitty-items/issues"
+		"url": "https://github.com/Hexca/item-flow-contracts/issues"
 	},
-	"homepage": "https://github.com/onflow/kitty-items#readme",
+	"homepage": "https://github.com/Hexca/item-flow-contracts#readme",
 	"devDependencies": {
 		"@babel/core": "^7.14.0",
 		"@babel/preset-env": "^7.14.1",
