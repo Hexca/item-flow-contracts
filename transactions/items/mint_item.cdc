@@ -1,10 +1,22 @@
-import NonFungibleToken from "../../contracts/NonFungibleToken.cdc"
-import Items from "../../contracts/Items.cdc"
+import NonFungibleToken from 0xNonFungibleToken
+import Items from 0xItems
+
+import FungibleToken from 0xFungibleToken
+import NFTStorefront from 0xNFTStorefront
 
 // This transction uses the NFTMinter resource to mint a new NFT.
-//
-// It must be run with the account that has the minter resource
-// stored at path /storage/NFTMinter.
+
+pub fun hasItems(_ address: Address): Bool {
+  return getAccount(address)
+    .getCapability<&Items.Collection{NonFungibleToken.CollectionPublic, Items.ItemsCollectionPublic}>(Items.CollectionPublicPath)
+    .check()
+}
+
+pub fun hasStorefront(_ address: Address): Bool {
+  return getAccount(address)
+    .getCapability<&NFTStorefront.Storefront{NFTStorefront.StorefrontPublic}>(NFTStorefront.StorefrontPublicPath)
+    .check()
+}
 
 transaction(recipient: Address, metadata: {String:String}) {
 
@@ -13,9 +25,36 @@ transaction(recipient: Address, metadata: {String:String}) {
 
     prepare(signer: AuthAccount) {
 
-        // borrow a reference to the NFTMinter resource in storage
-        self.minter = signer.borrow<&Items.NFTMinter>(from: Items.MinterStoragePath)
-            ?? panic("Could not borrow a reference to the NFT minter")
+        // initialize the account
+        if !hasItems(signer.address) {
+        if signer.borrow<&Items.Collection>(from: Items.CollectionStoragePath) == nil {
+            signer.save(<-Items.createEmptyCollection(), to: Items.CollectionStoragePath)
+        }
+        signer.unlink(Items.CollectionPublicPath)
+        signer.link<&Items.Collection{NonFungibleToken.CollectionPublic, Items.ItemsCollectionPublic}>(Items.CollectionPublicPath, target: Items.CollectionStoragePath)
+        }
+
+        if !hasStorefront(signer.address) {
+        if signer.borrow<&NFTStorefront.Storefront>(from: NFTStorefront.StorefrontStoragePath) == nil {
+            signer.save(<-NFTStorefront.createStorefront(), to: NFTStorefront.StorefrontStoragePath)
+        }
+        signer.unlink(NFTStorefront.StorefrontPublicPath)
+        signer.link<&NFTStorefront.Storefront{NFTStorefront.StorefrontPublic}>(NFTStorefront.StorefrontPublicPath, target: NFTStorefront.StorefrontStoragePath)
+        }
+
+        // borrow a reference to the NFTMinter resource in storage, create it if not exist
+        let _minter = signer.borrow<&Items.NFTMinter>(from: Items.MinterStoragePath)
+        if _minter == nil {
+            let nftMinter <- Items.createNFTMinter()
+            signer.save(<-nftMinter, to: Items.MinterStoragePath)
+            signer.unlink(Items.MinterPublicPath)
+            signer.link<&Items.NFTMinter{Items.NFTMinterPublic}>(Items.MinterPublicPath, target: Items.MinterStoragePath)
+
+            self.minter = signer.borrow<&Items.NFTMinter>(from: Items.MinterStoragePath)
+            ?? panic("Failed to borrow NFTMinter after creating it")
+        } else {
+            self.minter = _minter!
+        }
     }
 
     execute {
@@ -28,9 +67,6 @@ transaction(recipient: Address, metadata: {String:String}) {
             .borrow<&{NonFungibleToken.CollectionPublic}>()
             ?? panic("Could not get receiver reference to the NFT Collection")
 
-        // let kindValue = Items.Kind(rawValue: kind) ?? panic("invalid kind")
-        // let rarityValue = Items.Rarity(rawValue: rarity) ?? panic("invalid rarity")
-
         // mint the NFT and deposit it to the recipient's collection
         self.minter.mintNFT(
             recipient: receiver,
@@ -38,4 +74,3 @@ transaction(recipient: Address, metadata: {String:String}) {
         )
     }
 }
- 
