@@ -1,46 +1,39 @@
 # Items NFT Ecosystem
 
 `Items` is an ecosystem to onboard the next generation of NFT collectors. NFT
-vendors and artists can create and sell NFTs with near zero friction through
+vendors and creators can create and sell NFTs with near zero friction through
 one of our adapters and NFT collectors can purchase NFTs without interacting
-with a blockchain or cryptocurrency until they want or need to.
+with a blockchain or cryptocurrency until they want or need to through the use
+of traditional payments infrastructure and custodial wallets.
 
 ## Addresses
 
 | Contract     | Testnet              | Mainnet              |
 |--------------|----------------------|----------------------|
-| Items        | `0x3a74affa1231ce18` | `TBD`                |
+| Items        | `0xb89a588dd5e7f810` | `TBD`                |
 
 ## Contracts
 
-`Items`: The main contract for creating NFTs
+`Items`: The main contract for creating NFTs, it's derived from [KittyItems](https://github.com/onflow/kitty-items), the main change is it makes the `NFTMinter` resource public, and adds a public function `CreateNFTMinter`.
 
-* `@Piece`: created by an artist and can have `Items.NFT`s minted from it until locked.
-    `Piece`s contain metadata.
 
-* `@NFT`: the main NFT resource. It contains references to the `Piece` it belongs to and
-    the artist that created it.
-
-* `@Collection`: allows an account to hold `NFT`s
-
-* `@Admin`: a resource that grants the owner superuser permissions: to create `Artist`s,
-    `Piece`s, and create other `Admin`s. The `Admin` may be removed in the future to
-    allow open usage of the ecosystem.
 
 # Development
 
+## Dependencies
+
+* [Flow cli](https://docs.onflow.org/flow-cli/install/) v0.31.1 is required to run the tests, we pin an alpha version of `flow-js-testing` that currently only works on that version of the cli.
+
 ## Setup
 
-In order to hack on this project, clone the repo, then install the necessary node modules
-
-Run from the `./test` directory:
+Run from the `./tests` directory:
 ```
 $ yarn install
 ```
 
 ## Running tests
 
-Run from the `./test` directory:
+Run from the `./tests` directory:
 ```
 $ yarn test
 ```

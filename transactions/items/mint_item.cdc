@@ -2,19 +2,12 @@ import NonFungibleToken from 0xNonFungibleToken
 import Items from 0xItems
 
 import FungibleToken from 0xFungibleToken
-import NFTStorefront from 0xNFTStorefront
 
 // This transction uses the NFTMinter resource to mint a new NFT.
 
 pub fun hasItems(_ address: Address): Bool {
   return getAccount(address)
     .getCapability<&Items.Collection{NonFungibleToken.CollectionPublic, Items.ItemsCollectionPublic}>(Items.CollectionPublicPath)
-    .check()
-}
-
-pub fun hasStorefront(_ address: Address): Bool {
-  return getAccount(address)
-    .getCapability<&NFTStorefront.Storefront{NFTStorefront.StorefrontPublic}>(NFTStorefront.StorefrontPublicPath)
     .check()
 }
 
@@ -27,19 +20,11 @@ transaction(recipient: Address, metadata: {String:String}) {
 
         // initialize the account
         if !hasItems(signer.address) {
-        if signer.borrow<&Items.Collection>(from: Items.CollectionStoragePath) == nil {
-            signer.save(<-Items.createEmptyCollection(), to: Items.CollectionStoragePath)
-        }
-        signer.unlink(Items.CollectionPublicPath)
-        signer.link<&Items.Collection{NonFungibleToken.CollectionPublic, Items.ItemsCollectionPublic}>(Items.CollectionPublicPath, target: Items.CollectionStoragePath)
-        }
-
-        if !hasStorefront(signer.address) {
-        if signer.borrow<&NFTStorefront.Storefront>(from: NFTStorefront.StorefrontStoragePath) == nil {
-            signer.save(<-NFTStorefront.createStorefront(), to: NFTStorefront.StorefrontStoragePath)
-        }
-        signer.unlink(NFTStorefront.StorefrontPublicPath)
-        signer.link<&NFTStorefront.Storefront{NFTStorefront.StorefrontPublic}>(NFTStorefront.StorefrontPublicPath, target: NFTStorefront.StorefrontStoragePath)
+            if signer.borrow<&Items.Collection>(from: Items.CollectionStoragePath) == nil {
+                signer.save(<-Items.createEmptyCollection(), to: Items.CollectionStoragePath)
+            }
+            signer.unlink(Items.CollectionPublicPath)
+            signer.link<&Items.Collection{NonFungibleToken.CollectionPublic, Items.ItemsCollectionPublic}>(Items.CollectionPublicPath, target: Items.CollectionStoragePath)
         }
 
         // borrow a reference to the NFTMinter resource in storage, create it if not exist

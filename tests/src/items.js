@@ -16,7 +16,6 @@ export const deployItems = async () => {
 	await mintFlow(Admin, "10.0");
 
 	await deployContractByNameWithErrorRaised({ to: Admin, name: "NonFungibleToken" });
-
 	await deployContractByNameWithErrorRaised({ to: Admin, name: "MetadataViews" });
 
 	const addressMap = { 
@@ -46,7 +45,7 @@ export const setupItemsOnAccount = async (account) => {
  * @returns {UInt64} - number of NFT minted so far
  * */
 export const getItemSupply = async () => {
-	const name = "items/get_items_supply";
+	const name = "../scripts/items/get_items_supply";
 
 	return executeScriptWithErrorRaised({ name });
 };
@@ -92,7 +91,7 @@ export const transferItem = async (sender, recipient, itemId) => {
  * @returns {UInt64}
  * */
 export const getItem = async (account, itemID) => {
-	const name = "items/get_item";
+	const name = "../scripts/items/get_item";
 	const args = [account, itemID];
 
 	return executeScriptWithErrorRaised({ name, args });
@@ -105,7 +104,7 @@ export const getItem = async (account, itemID) => {
  * @returns {UInt64}
  * */
 export const getItemCount = async (account) => {
-	const name = "items/get_collection_length";
+	const name = "../scripts/items/get_collection_length";
 	const args = [account];
 
 	return executeScriptWithErrorRaised({ name, args });
