@@ -26,11 +26,15 @@ pub contract Items: NonFungibleToken {
 
         pub let id: UInt64
 
-        pub let metadata: {String:String}
+        access(self) let metadata: {String:String}
 
         init(id: UInt64, metadata: {String:String}) {
             self.id = id
             self.metadata = metadata
+        }
+
+        pub fun getMetadata(): {String: String} {
+            return self.metadata
         }
 
         pub fun getAttribute(key:String): String {
@@ -130,7 +134,6 @@ pub contract Items: NonFungibleToken {
 
         // borrowItem
         // Gets a reference to an NFT in the collection as a Item,
-        // exposing all of its fields (including the typeID & rarityID).
         // This is safe as there are no functions that can be called on the Item.
         //
         pub fun borrowItem(id: UInt64): &Items.NFT? {

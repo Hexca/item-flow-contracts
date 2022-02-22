@@ -5,11 +5,14 @@ import {
 	init,
 	getAccountAddress,
 	shallPass,
-	shallThrow,
 	shallRevert,
 } from "flow-js-testing";
 
-import { getAdminAddress } from "../src/common";
+import {
+	getAdminAddress,
+	extractMintedItemIDFromTx,
+} from "../src/common";
+
 import {
 	deployItems,
 	getItemCount,
@@ -17,6 +20,8 @@ import {
 	mintItem,
 	setupItemsOnAccount,
 	transferItem,
+	getItemMetadata,
+	modifyItemMetadata,
 } from "../src/items";
 
 // We need to set timeout for a higher number, because some transactions might take up some time
@@ -106,9 +111,41 @@ describe("Items", () => {
 		await setupItemsOnAccount(Bob);
 
 		// Mint instruction for Alice account shall be resolved
-		await shallPass(mintItem(Alice, metadata));
+		const mintTxAlice = await shallPass(mintItem(Alice, metadata));
+		const mintedItemId = extractMintedItemIDFromTx(mintTxAlice);
+		const aliceMetadataBefore = await getItemMetadata(Alice, mintedItemId);
+		const bobMetadataBefore = await getItemMetadata(Bob, mintedItemId);
+
+		expect(aliceMetadataBefore).toEqual(metadata);
+		expect(bobMetadataBefore).toEqual({});
 
 		// Transfer transaction shall pass
 		await shallPass(transferItem(Alice, Bob, 0));
+		const aliceMetadataAfter = await getItemMetadata(Alice, mintedItemId);
+		const bobMetadataAfter = await getItemMetadata(Bob, mintedItemId);
+
+		expect(aliceMetadataAfter).toEqual({});
+		expect(bobMetadataAfter).toEqual(metadata);
+	});
+
+	it("should not be able to modify metadata after minting an NFT", async () => {
+		await deployItems();
+		const Alice = await getAccountAddress("Alice");
+		await setupItemsOnAccount(Alice);
+
+		// Mint instruction for Alice account shall be resolved
+		const mintTx = await shallPass(mintItem(Alice, metadata));
+		const mintedItemId = extractMintedItemIDFromTx(mintTx);
+
+		const metadataBefore = await getItemMetadata(Alice, mintedItemId);
+
+		try {
+			await shallRevert(modifyItemMetadata(Alice, mintedItemId));
+		} catch (e) {
+		}
+
+		const metadataAfter = await getItemMetadata(Alice, mintedItemId);
+
+		expect(metadataAfter).toEqual(metadataBefore);
 	});
 });

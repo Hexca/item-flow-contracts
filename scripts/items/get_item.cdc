@@ -58,7 +58,7 @@ pub fun main(address: Address, itemID: UInt64): Item? {
         return Item(
           itemID: itemID,
           owner: address,
-          metadata: item.metadata,
+          metadata: item.getMetadata(),
         )
       }
     }
