@@ -84,6 +84,21 @@ export const transferItem = async (sender, recipient, itemId) => {
 };
 
 /*
+ * Modify an Item's metadata with id equal **itemId** from **sender** account
+ * @param {string} sender - sender address
+ * @param {UInt64} itemId - id of the item to transfer
+ * @throws Will throw an error if execution will be halted
+ * @returns {Promise<*>}
+ * */
+export const modifyItemMetadata = async (sender, itemId) => {
+	const name = "items/modify_item_metadata";
+	const args = [itemId];
+	const signers = [sender];
+
+	return sendTransactionWithErrorRaised({ name, args, signers });
+};
+
+/*
  * Returns the Item NFT with the provided **id** from an account collection.
  * @param {string} account - account address
  * @param {UInt64} itemID - NFT id
@@ -108,4 +123,16 @@ export const getItemCount = async (account) => {
 	const args = [account];
 
 	return executeScriptWithErrorRaised({ name, args });
+};
+
+/*
+ * Returns Item metadata.
+ * @throws Will throw an error if execution will be halted
+ * @returns {String:String} - metadata for that item
+ * */
+export const getItemMetadata = async (account, itemId) => {
+	const name = "../scripts/items/get_item_metadata";
+	const args = [account, itemId]
+
+	return executeScriptWithErrorRaised({ name, args});
 };

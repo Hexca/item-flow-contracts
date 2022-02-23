@@ -8,7 +8,11 @@ import {
 	mintFlow,
 } from "flow-js-testing";
 
-import { toUFix64 } from "../src/common";
+import {
+	toUFix64,
+	extractMintedItemIDFromTx,
+} from "../src/common";
+
 import { 
 	getItemCount,
 	mintItem,
@@ -118,9 +122,8 @@ describe("NFT Storefront", () => {
 		await shallPass(setupStorefrontOnAccount(Alice));
 
 		// Mint instruction shall pass
-		await shallPass(mintItem(Alice, metadata));
-
-		const itemId = 0;
+		const mintTx = await shallPass(mintItem(Alice, metadata));
+		const itemId = extractMintedItemIDFromTx(mintTx);
 
 		await getItem(Alice, itemId);
 

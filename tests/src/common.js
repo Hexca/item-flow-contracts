@@ -31,3 +31,14 @@ export const deployContractByNameWithErrorRaised = async (...props) => {
     }
     return resp;
 }
+
+export const extractMintedItemIDFromTx = (tx) => {
+    const events = tx.events;
+    for (let i = 0; i < events.length; i += 1) {
+        if (events[i].type.endsWith(".Minted")) {
+            return events[i].data.id;
+        }
+    }
+
+    throw new Error(`No Minted event in transaction: {JSON.stringify(tx)}`);
+}
