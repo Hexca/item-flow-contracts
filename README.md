@@ -10,7 +10,7 @@ of traditional payments infrastructure and custodial wallets.
 
 | Contract     | Testnet              | Mainnet              |
 |--------------|----------------------|----------------------|
-| Items        | `0xb89a588dd5e7f810` | `TBD`                |
+| Items        | `0x31c9a1b387049b86` | `TBD`                |
 
 ## Contracts
 
