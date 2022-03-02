@@ -235,10 +235,10 @@ pub contract Items: NonFungibleToken {
         // set rarity price mapping
 
         // Set our named paths
-        self.CollectionStoragePath = /storage/ItemsCollectionV11
-        self.CollectionPublicPath = /public/ItemsCollectionV11
-        self.MinterStoragePath = /storage/ItemsMinterV11
-        self.MinterPublicPath = /public/ItemsMinterV11
+        self.CollectionStoragePath = /storage/ItemsCollectionV12
+        self.CollectionPublicPath = /public/ItemsCollectionV12
+        self.MinterStoragePath = /storage/ItemsMinterV12
+        self.MinterPublicPath = /public/ItemsMinterV12
 
         // Initialize the total supply
         self.totalSupply = 0
