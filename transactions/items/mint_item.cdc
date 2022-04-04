@@ -11,7 +11,7 @@ pub fun hasItems(_ address: Address): Bool {
     .check()
 }
 
-transaction(recipient: Address, metadata: {String:String}) {
+transaction(recipient: Address, metadata: {String:String}, royalties: [Royalty]) {
 
     // local variable for storing the minter reference
     let minter: &Items.NFTMinter
@@ -56,6 +56,7 @@ transaction(recipient: Address, metadata: {String:String}) {
         self.minter.mintNFT(
             recipient: receiver,
             metadata:metadata,
+            royalties:royalties,
         )
     }
 }

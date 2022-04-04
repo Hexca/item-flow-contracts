@@ -8,7 +8,7 @@ pub contract Items: NonFungibleToken {
     pub event ContractInitialized()
     pub event Withdraw(id: UInt64, from: Address?)
     pub event Deposit(id: UInt64, to: Address?)
-    pub event Minted(id: UInt64, metadata:{String:String})
+    pub event Minted(id: UInt64, metadata:{String:String}, royalties: [Royalty])
 
     // Named Paths
     //
@@ -16,6 +16,17 @@ pub contract Items: NonFungibleToken {
     pub let CollectionPublicPath: PublicPath
     pub let MinterStoragePath: StoragePath
     pub let MinterPublicPath: PublicPath
+
+    pub struct Royalty {
+        pub let address: Address
+        pub let fee: UFix64
+
+        init(address: Address, fee: UFix64) {
+            self.address = address
+            self.fee = fee
+        }
+    }
+
 
     // totalSupply
     // The total number of Items that have been minted
@@ -27,10 +38,12 @@ pub contract Items: NonFungibleToken {
         pub let id: UInt64
 
         access(self) let metadata: {String:String}
+        access(self) let royalties: [Royalty]
 
-        init(id: UInt64, metadata: {String:String}) {
+        init(id: UInt64, metadata: {String:String}, royalties: [Royalty]) {
             self.id = id
             self.metadata = metadata
+            self.royalties = royalties
         }
 
         pub fun getMetadata(): {String: String} {
@@ -39,6 +52,10 @@ pub contract Items: NonFungibleToken {
 
         pub fun getAttribute(key:String): String {
             return self.metadata[key]!
+        }
+
+        pub fun getRoyalties(): [Royalty] {
+            return self.royalties
         }
 
         pub fun getViews(): [Type] {
@@ -195,13 +212,15 @@ pub contract Items: NonFungibleToken {
         pub fun mintNFT(
             recipient: &{NonFungibleToken.CollectionPublic}, 
             metadata: {String:String},
+            royalties: [Royalty]
         ) {
             // deposit it in the recipient's account using their reference
-            recipient.deposit(token: <-create Items.NFT(id: Items.totalSupply, metadata:metadata))
+            recipient.deposit(token: <-create Items.NFT(id: Items.totalSupply, metadata:metadata, royalties:royalties))
 
             emit Minted(
                 id: Items.totalSupply,
                 metadata:metadata,
+                royalties:royalties
             )
 
             Items.totalSupply = Items.totalSupply + 1

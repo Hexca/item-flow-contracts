@@ -25,6 +25,8 @@ transaction(saleItemID: UInt64, saleItemPrice: UFix64) {
     let flowReceiver: Capability<&FlowToken.Vault{FungibleToken.Receiver}>
     let ItemsProvider: Capability<&Items.Collection{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>
     let storefront: &NFTStorefront.Storefront
+    let nft: &Items.NFT
+    let saleCuts: SaleCut[]
 
     prepare(account: AuthAccount) {
         // We need a provider capability, but one is not provided by default so we create one if needed.
@@ -43,19 +45,31 @@ transaction(saleItemID: UInt64, saleItemPrice: UFix64) {
         assert(self.ItemsProvider.borrow() != nil, message: "Missing or mis-typed Items.Collection provider")
 
         self.storefront = getOrCreateStorefront(account: account)
-    }
 
-    execute {
+        self.nft = self.ItemsProvider.borrow()!.borrowNFT(saleItemID)
+
+        let royalties = self.nft.getRoyalties();
+        let totalRoyaltiesRate = 0;
+        for royalty in royalties {
+            assert(royalty.rate >= 0.0 && royalty.rate < 1.0, message: "Sum of payouts must be in range [0..1)")
+            self.saleCuts.append(NFTStorefront.SaleCut(royalty.address, saleItemPrice * royalty.rate))
+            totalRoyaltiesRate += royalty.rate
+        }
+
         let saleCut = NFTStorefront.SaleCut(
             receiver: self.flowReceiver,
-            amount: saleItemPrice
+            amount: saleItemPrice * (1.0 - totalRoyaltiesRate)
         )
+        self.saleCuts.append(saleCut)
+    }
+    
+    execute {        
         self.storefront.createListing(
             nftProviderCapability: self.ItemsProvider,
             nftType: Type<@Items.NFT>(),
             nftID: saleItemID,
             salePaymentVaultType: Type<@FlowToken.Vault>(),
-            saleCuts: [saleCut]
+            saleCuts: self.saleCuts
         )
     }
 }

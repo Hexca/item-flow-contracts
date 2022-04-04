@@ -6,13 +6,15 @@ import NFTStorefront from "../../contracts/NFTStorefront.cdc"
 
 // This transction uses the NFTMinter resource to mint a new NFT.
 
-transaction(recipient: Address, metadata: {String:String}) {
+transaction(recipient: Address, metadata: {String:String}, royalties: [Royalty]) {
 
     // local variable for storing the minter reference
     let minter: &Items.NFTMinter
     let flowReceiver: Capability<&FlowToken.Vault{FungibleToken.Receiver}>
     let ItemsProvider: Capability<&Items.Collection{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>
     let storefront: &NFTStorefront.Storefront
+    let saleCuts: SaleCut[]
+
 
     prepare(signer: AuthAccount) {
 
@@ -37,6 +39,20 @@ transaction(recipient: Address, metadata: {String:String}) {
 
         self.storefront = signer.borrow<&NFTStorefront.Storefront>(from: NFTStorefront.StorefrontStoragePath)
             ?? panic("Missing or mis-typed NFTStorefront Storefront")
+
+        
+        let totalRoyaltiesRate = 0;
+        for royalty in royalties {
+            assert(royalty.rate >= 0.0 && royalty.rate < 1.0, message: "Sum of payouts must be in range [0..1)")
+            self.saleCuts.append(NFTStorefront.SaleCut(royalty.address, saleItemPrice * royalty.rate))
+            totalRoyaltiesRate += royalty.rate
+        }
+
+        let saleCut = NFTStorefront.SaleCut(
+            receiver: self.flowReceiver,
+            amount: saleItemPrice * (1.0 - totalRoyaltiesRate)
+        )
+        self.saleCuts.append(saleCut)
     }
 
     execute {
@@ -56,20 +72,21 @@ transaction(recipient: Address, metadata: {String:String}) {
         // mint the NFT and deposit it to the recipient's collection
         self.minter.mintNFT(
             recipient: receiver,
-            metadata: metadata
+            metadata: metadata,
+            royalties: royalties
         )
 
-        let saleCut = NFTStorefront.SaleCut(
-            receiver: self.flowReceiver,
-            amount: 1.0,
-        )
+        // let saleCut = NFTStorefront.SaleCut(
+        //     receiver: self.flowReceiver,
+        //     amount: 1.0,
+        // )
         
         self.storefront.createListing(
             nftProviderCapability: self.ItemsProvider,
             nftType: Type<@Items.NFT>(),
             nftID: Items.totalSupply - 1,
             salePaymentVaultType: Type<@FlowToken.Vault>(),
-            saleCuts: [saleCut]
+            saleCuts: saleCuts
         )
     }
 }
