@@ -23,10 +23,10 @@ pub fun getOrCreateStorefront(account: AuthAccount): &NFTStorefront.Storefront {
 transaction(saleItemID: UInt64, saleItemPrice: UFix64) {
 
     let flowReceiver: Capability<&FlowToken.Vault{FungibleToken.Receiver}>
-    let ItemsProvider: Capability<&Items.Collection{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>
+    let ItemsProvider: Capability<&Items.Collection{Items.ItemsCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>
     let storefront: &NFTStorefront.Storefront
-    let nft: &Items.NFT
-    let saleCuts: SaleCut[]
+    let nft: &Items.NFT?
+    let saleCuts: [NFTStorefront.SaleCut]
 
     prepare(account: AuthAccount) {
         // We need a provider capability, but one is not provided by default so we create one if needed.
@@ -36,24 +36,28 @@ transaction(saleItemID: UInt64, saleItemPrice: UFix64) {
 
         assert(self.flowReceiver.borrow() != nil, message: "Missing or mis-typed FLOW receiver")
 
-        if !account.getCapability<&Items.Collection{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>(ItemsCollectionProviderPrivatePath)!.check() {
-            account.link<&Items.Collection{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>(ItemsCollectionProviderPrivatePath, target: Items.CollectionStoragePath)
+        if !account.getCapability<&Items.Collection{Items.ItemsCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>(ItemsCollectionProviderPrivatePath)!.check() {
+            account.link<&Items.Collection{Items.ItemsCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>(ItemsCollectionProviderPrivatePath, target: Items.CollectionStoragePath)
         }
 
-        self.ItemsProvider = account.getCapability<&Items.Collection{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>(ItemsCollectionProviderPrivatePath)!
+        self.ItemsProvider = account.getCapability<&Items.Collection{Items.ItemsCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>(ItemsCollectionProviderPrivatePath)!
 
         assert(self.ItemsProvider.borrow() != nil, message: "Missing or mis-typed Items.Collection provider")
 
         self.storefront = getOrCreateStorefront(account: account)
 
-        self.nft = self.ItemsProvider.borrow()!.borrowNFT(saleItemID)
+        self.saleCuts = []
 
-        let royalties = self.nft.getRoyalties();
-        let totalRoyaltiesRate = 0;
+        self.nft = self.ItemsProvider.borrow()!.borrowItem(id: saleItemID)
+
+        let royalties = self.nft!.getRoyalties();
+        var totalRoyaltiesRate = 0.0;
+
         for royalty in royalties {
             assert(royalty.rate >= 0.0 && royalty.rate < 1.0, message: "Sum of payouts must be in range [0..1)")
-            self.saleCuts.append(NFTStorefront.SaleCut(royalty.address, saleItemPrice * royalty.rate))
-            totalRoyaltiesRate += royalty.rate
+            let royaltyReceiver = getAccount(royalty.address).getCapability<&FlowToken.Vault{FungibleToken.Receiver}>(/public/flowTokenReceiver)!
+            self.saleCuts.append(NFTStorefront.SaleCut(royaltyReceiver, saleItemPrice * royalty.rate))
+            totalRoyaltiesRate = totalRoyaltiesRate + royalty.rate
         }
 
         let saleCut = NFTStorefront.SaleCut(
@@ -62,7 +66,7 @@ transaction(saleItemID: UInt64, saleItemPrice: UFix64) {
         )
         self.saleCuts.append(saleCut)
     }
-    
+
     execute {        
         self.storefront.createListing(
             nftProviderCapability: self.ItemsProvider,

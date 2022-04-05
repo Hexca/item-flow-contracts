@@ -6,14 +6,14 @@ import NFTStorefront from "../../contracts/NFTStorefront.cdc"
 
 // This transction uses the NFTMinter resource to mint a new NFT.
 
-transaction(recipient: Address, metadata: {String:String}, royalties: [Royalty]) {
+transaction(recipient: Address, metadata: {String:String}, royalties: [Items.Royalty]) {
 
     // local variable for storing the minter reference
     let minter: &Items.NFTMinter
     let flowReceiver: Capability<&FlowToken.Vault{FungibleToken.Receiver}>
     let ItemsProvider: Capability<&Items.Collection{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>
     let storefront: &NFTStorefront.Storefront
-    let saleCuts: SaleCut[]
+    let saleCuts: [NFTStorefront.SaleCut]
 
 
     prepare(signer: AuthAccount) {
@@ -40,12 +40,12 @@ transaction(recipient: Address, metadata: {String:String}, royalties: [Royalty])
         self.storefront = signer.borrow<&NFTStorefront.Storefront>(from: NFTStorefront.StorefrontStoragePath)
             ?? panic("Missing or mis-typed NFTStorefront Storefront")
 
-        
+        self.saleCuts = []
         let totalRoyaltiesRate = 0;
         for royalty in royalties {
             assert(royalty.rate >= 0.0 && royalty.rate < 1.0, message: "Sum of payouts must be in range [0..1)")
             self.saleCuts.append(NFTStorefront.SaleCut(royalty.address, saleItemPrice * royalty.rate))
-            totalRoyaltiesRate += royalty.rate
+            totalRoyaltiesRate = royalty.rate
         }
 
         let saleCut = NFTStorefront.SaleCut(

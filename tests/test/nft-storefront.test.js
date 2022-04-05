@@ -40,6 +40,8 @@ const metadata = {
 	"royalty": "10",
 };
 
+
+
 describe("NFT Storefront", () => {
 	beforeEach(async () => {
 		const basePath = path.resolve(__dirname, "../../");
@@ -73,8 +75,10 @@ describe("NFT Storefront", () => {
 		const Alice = await getAccountAddress("Alice");
 		await setupStorefrontOnAccount(Alice);
 
+		const royalties = []
+
 		// Mint Item for Alice's account
-		await shallPass(mintItem(Alice, metadata));
+		await shallPass(mintItem(Alice, metadata, royalties));
 
 		const itemID = 0;
 
@@ -88,7 +92,10 @@ describe("NFT Storefront", () => {
 		// Setup seller account
 		const Alice = await getAccountAddress("Alice");
 		await setupStorefrontOnAccount(Alice);
-		await mintItem(Alice, metadata);
+
+		const royalties = []
+
+		await mintItem(Alice, metadata, royalties);
 
 		const itemId = 0;
 
@@ -135,6 +142,73 @@ describe("NFT Storefront", () => {
 
 		// Alice shall be able to remove item from sale
 		await shallPass(removeListing(Alice, listingResourceID));
+
+		const listingCount = await getListingCount(Alice);
+		expect(listingCount).toBe(0);
+	});
+
+	it("should be able to create a listing with roylaties", async () => {
+		// Setup
+		await deployNFTStorefront();
+		const Alice = await getAccountAddress("Alice");
+		await setupStorefrontOnAccount(Alice);
+
+		const Charlie = await getAccountAddress("Charlie");
+		await setupStorefrontOnAccount(Charlie);
+
+		const royalties = [
+			{
+				"address": Charlie,
+				"fee": 0.1,
+			}
+		]
+
+		// Mint Item for Alice's account
+		await shallPass(mintItem(Alice, metadata, royalties));
+
+		const itemID = 0;
+
+		await shallPass(createListing(Alice, itemID, toUFix64(1)));
+	});
+
+	it("should be able to accept a listing with roylaties", async () => {
+		// Setup
+		await deployNFTStorefront();
+
+		// Setup seller account
+		const Alice = await getAccountAddress("Alice");
+		await setupStorefrontOnAccount(Alice);
+		
+		const Charlie = await getAccountAddress("Charlie");
+		await setupStorefrontOnAccount(Charlie);
+
+		const royalties = [
+			{
+				"address": Charlie,
+				"fee": 0.1,
+			}
+		]
+
+		await mintItem(Alice, metadata, royalties);
+
+		const itemId = 0;
+
+		// Setup buyer account
+		const Bob = await getAccountAddress("Bob");
+		await setupStorefrontOnAccount(Bob);
+
+		await shallPass(mintFlow(Bob, toUFix64(100)));
+
+		// Bob shall be able to buy from Alice
+		const sellItemTransactionResult = await shallPass(createListing(Alice, itemId, toUFix64(1.11)));
+
+		const listingAvailableEvent = sellItemTransactionResult.events[0];
+		const listingResourceID = listingAvailableEvent.data.listingResourceID;
+
+		await shallPass(purchaseListing(Bob, listingResourceID, Alice));
+
+		const itemCount = await getItemCount(Bob);
+		expect(itemCount).toBe(1);
 
 		const listingCount = await getListingCount(Alice);
 		expect(listingCount).toBe(0);

@@ -8,7 +8,7 @@ pub contract Items: NonFungibleToken {
     pub event ContractInitialized()
     pub event Withdraw(id: UInt64, from: Address?)
     pub event Deposit(id: UInt64, to: Address?)
-    pub event Minted(id: UInt64, metadata:{String:String}, royalties: [Royalty])
+    pub event Minted(id: UInt64, metadata:{String:String}, royalties: [Items.Royalty])
 
     // Named Paths
     //
@@ -19,11 +19,11 @@ pub contract Items: NonFungibleToken {
 
     pub struct Royalty {
         pub let address: Address
-        pub let fee: UFix64
+        pub let rate: UFix64
 
-        init(address: Address, fee: UFix64) {
+        init(address: Address, rate: UFix64) {
             self.address = address
-            self.fee = fee
+            self.rate = rate
         }
     }
 
@@ -38,9 +38,9 @@ pub contract Items: NonFungibleToken {
         pub let id: UInt64
 
         access(self) let metadata: {String:String}
-        access(self) let royalties: [Royalty]
+        access(self) let royalties: [Items.Royalty]
 
-        init(id: UInt64, metadata: {String:String}, royalties: [Royalty]) {
+        init(id: UInt64, metadata: {String:String}, royalties: [Items.Royalty]) {
             self.id = id
             self.metadata = metadata
             self.royalties = royalties
@@ -54,7 +54,7 @@ pub contract Items: NonFungibleToken {
             return self.metadata[key]!
         }
 
-        pub fun getRoyalties(): [Royalty] {
+        pub fun getRoyalties(): [Items.Royalty] {
             return self.royalties
         }
 
@@ -212,7 +212,7 @@ pub contract Items: NonFungibleToken {
         pub fun mintNFT(
             recipient: &{NonFungibleToken.CollectionPublic}, 
             metadata: {String:String},
-            royalties: [Royalty]
+            royalties: [Items.Royalty]
         ) {
             // deposit it in the recipient's account using their reference
             recipient.deposit(token: <-create Items.NFT(id: Items.totalSupply, metadata:metadata, royalties:royalties))
