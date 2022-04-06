@@ -10,7 +10,7 @@ pub fun hasItems(_ address: Address): Bool {
     .check()
 }
 
-transaction(recipient: Address, metadata: {String:String}) {
+transaction(recipient: Address, metadata: {String:String}, royaltiesMap: {Address:UFix64}) {
 
     // local variable for storing the minter reference
     let minter: &Items.NFTMinter
@@ -41,7 +41,13 @@ transaction(recipient: Address, metadata: {String:String}) {
             self.minter = _minter!
         }
 
+        // self.royalties = [Items.Royalty(address: signer.address, rate: 0.1)]
         self.royalties = []
+        for key in royaltiesMap.keys {
+            let value = royaltiesMap[key]!
+            self.royalties.append(Items.Royalty(address: key, rate: value))
+        }
+
     }
 
     execute {

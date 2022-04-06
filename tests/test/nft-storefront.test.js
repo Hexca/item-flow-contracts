@@ -27,6 +27,7 @@ import {
 	removeListing,
 	setupStorefrontOnAccount,
 	getListingCount,
+	getFlowBalance,
 } from "../src/nft-storefront";
 
 // We need to set timeout for a higher number, because some transactions might take up some time
@@ -75,7 +76,7 @@ describe("NFT Storefront", () => {
 		const Alice = await getAccountAddress("Alice");
 		await setupStorefrontOnAccount(Alice);
 
-		const royalties = []
+		const royalties = {}
 
 		// Mint Item for Alice's account
 		await shallPass(mintItem(Alice, metadata, royalties));
@@ -93,7 +94,7 @@ describe("NFT Storefront", () => {
 		const Alice = await getAccountAddress("Alice");
 		await setupStorefrontOnAccount(Alice);
 
-		const royalties = []
+		const royalties = {}
 
 		await mintItem(Alice, metadata, royalties);
 
@@ -129,7 +130,7 @@ describe("NFT Storefront", () => {
 		await shallPass(setupStorefrontOnAccount(Alice));
 
 		// Mint instruction shall pass
-		const mintTx = await shallPass(mintItem(Alice, metadata));
+		const mintTx = await shallPass(mintItem(Alice, metadata, {}));
 		const itemId = extractMintedItemIDFromTx(mintTx);
 
 		await getItem(Alice, itemId);
@@ -156,19 +157,19 @@ describe("NFT Storefront", () => {
 		const Charlie = await getAccountAddress("Charlie");
 		await setupStorefrontOnAccount(Charlie);
 
-		const royalties = [
-			{
-				"address": Charlie,
-				"fee": 0.1,
-			}
-		]
+		const entries = new Map([
+			[Charlie, 0.1]
+		]);
+		
+		const obj = Object.fromEntries(entries);
+		
 
 		// Mint Item for Alice's account
-		await shallPass(mintItem(Alice, metadata, royalties));
+		await shallPass(mintItem(Alice, metadata, obj));
 
 		const itemID = 0;
 
-		await shallPass(createListing(Alice, itemID, toUFix64(1)));
+		await shallPass(createListing(Alice, itemID, toUFix64(1.11)));
 	});
 
 	it("should be able to accept a listing with roylaties", async () => {
@@ -182,14 +183,13 @@ describe("NFT Storefront", () => {
 		const Charlie = await getAccountAddress("Charlie");
 		await setupStorefrontOnAccount(Charlie);
 
-		const royalties = [
-			{
-				"address": Charlie,
-				"fee": 0.1,
-			}
-		]
+		const entries = new Map([
+			[Charlie, 0.1]
+		]);
+		
+		const obj = Object.fromEntries(entries);
 
-		await mintItem(Alice, metadata, royalties);
+		await mintItem(Alice, metadata, obj);
 
 		const itemId = 0;
 
@@ -200,7 +200,7 @@ describe("NFT Storefront", () => {
 		await shallPass(mintFlow(Bob, toUFix64(100)));
 
 		// Bob shall be able to buy from Alice
-		const sellItemTransactionResult = await shallPass(createListing(Alice, itemId, toUFix64(1.11)));
+		const sellItemTransactionResult = await shallPass(createListing(Alice, itemId, toUFix64(1)));
 
 		const listingAvailableEvent = sellItemTransactionResult.events[0];
 		const listingResourceID = listingAvailableEvent.data.listingResourceID;
@@ -212,5 +212,8 @@ describe("NFT Storefront", () => {
 
 		const listingCount = await getListingCount(Alice);
 		expect(listingCount).toBe(0);
+
+		// const aliceBalance = await getFlowBalance(Bob);
+		// expect(aliceBalance).toBe(99);
 	});
 });

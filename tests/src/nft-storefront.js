@@ -99,3 +99,11 @@ export const getListingCount = async (account) => {
 
 	return executeScriptWithErrorRaised({ name, args });
 };
+
+
+export const getFlowBalance = async (account) => {
+	const name = "flow/get_balance";
+	const args = [account]
+
+	return executeScriptWithErrorRaised({ name, args});
+};

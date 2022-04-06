@@ -22,6 +22,7 @@ import {
 	transferItem,
 	getItemMetadata,
 	modifyItemMetadata,
+	getItemRoyalties,
 } from "../src/items";
 
 // We need to set timeout for a higher number, because some transactions might take up some time
@@ -72,8 +73,24 @@ describe("Items", () => {
 		const Alice = await getAccountAddress("Alice");
 		await setupItemsOnAccount(Alice);
 
+		const Charlie = await getAccountAddress("Charlie");
+		await setupItemsOnAccount(Charlie);
+
+		const entries = new Map([
+			[Charlie, 0.1]
+		]);
+		
+		const obj = Object.fromEntries(entries);
+		
 		// Mint instruction for Alice account shall be resolved
-		await shallPass(mintItem(Alice, metadata));
+		const mintTxAlice = await shallPass(mintItem(Alice, metadata, obj));
+		const mintedItemId = extractMintedItemIDFromTx(mintTxAlice);
+
+		const royaltiesData = await getItemRoyalties(Alice, mintedItemId);
+		console.log(royaltiesData);
+		expect(royaltiesData.length).toBe(1);
+		expect(parseFloat(royaltiesData[0].rate)).toBe(0.1);
+
 	});
 
 	it("should be able to create a new empty NFT Collection", async () => {
@@ -111,7 +128,7 @@ describe("Items", () => {
 		await setupItemsOnAccount(Bob);
 
 		// Mint instruction for Alice account shall be resolved
-		const mintTxAlice = await shallPass(mintItem(Alice, metadata));
+		const mintTxAlice = await shallPass(mintItem(Alice, metadata,[]));
 		const mintedItemId = extractMintedItemIDFromTx(mintTxAlice);
 		const aliceMetadataBefore = await getItemMetadata(Alice, mintedItemId);
 		const bobMetadataBefore = await getItemMetadata(Bob, mintedItemId);
@@ -134,7 +151,7 @@ describe("Items", () => {
 		await setupItemsOnAccount(Alice);
 
 		// Mint instruction for Alice account shall be resolved
-		const mintTx = await shallPass(mintItem(Alice, metadata));
+		const mintTx = await shallPass(mintItem(Alice, metadata,[]));
 		const mintedItemId = extractMintedItemIDFromTx(mintTx);
 
 		const metadataBefore = await getItemMetadata(Alice, mintedItemId);
