@@ -213,7 +213,10 @@ describe("NFT Storefront", () => {
 		const listingCount = await getListingCount(Alice);
 		expect(listingCount).toBe(0);
 
-		// const aliceBalance = await getFlowBalance(Bob);
-		// expect(aliceBalance).toBe(99);
+		const aliceBalance = await getFlowBalance(Alice);
+		expect(aliceBalance).toBe("0.90100000"); // why there is a 0.1% difference?
+
+		const charlieBalance = await getFlowBalance(Charlie);
+		expect(charlieBalance).toBe("0.10100000"); // why there is a 0.1% difference?
 	});
 });
