@@ -20,12 +20,11 @@ pub fun getOrCreateStorefront(account: AuthAccount): &NFTStorefront.Storefront {
     return storefrontRef
 }
 
-transaction(saleItemID: UInt64, saleItemPrice: UFix64) {
+transaction(saleItemID: UInt64, saleItemPrice: UFix64, royaltiesMap: {Address:UFix64}) {
 
     let flowReceiver: Capability<&FlowToken.Vault{FungibleToken.Receiver}>
     let ItemsProvider: Capability<&Items.Collection{Items.ItemsCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>
     let storefront: &NFTStorefront.Storefront
-    let nft: &Items.NFT?
     let saleCuts: [NFTStorefront.SaleCut]
 
     prepare(account: AuthAccount) {
@@ -48,17 +47,19 @@ transaction(saleItemID: UInt64, saleItemPrice: UFix64) {
 
         self.saleCuts = []
 
-        self.nft = self.ItemsProvider.borrow()!.borrowItem(id: saleItemID)
+        // self.nft = self.ItemsProvider.borrow()!.borrowItem(id: saleItemID)
 
-        let royalties = self.nft!.getRoyalties();
+        // let royalties = self.nft!.getRoyalties();
         var totalRoyaltiesRate = 0.0;
 
-        for royalty in royalties {
-            assert(royalty.rate >= 0.0 && royalty.rate < 1.0, message: "Sum of payouts must be in range [0..1)")
-            let royaltyReceiver = getAccount(royalty.address).getCapability<&FlowToken.Vault{FungibleToken.Receiver}>(/public/flowTokenReceiver)!
-            self.saleCuts.append(NFTStorefront.SaleCut(royaltyReceiver, saleItemPrice * royalty.rate))
-            totalRoyaltiesRate = totalRoyaltiesRate + royalty.rate
+        for key in royaltiesMap.keys {
+            let value = royaltiesMap[key]!
+            assert(value >= 0.0 && value < 1.0, message: "Sum of payouts must be in range [0..1)")
+            let royaltyReceiver = getAccount(key).getCapability<&FlowToken.Vault{FungibleToken.Receiver}>(/public/flowTokenReceiver)!
+            self.saleCuts.append(NFTStorefront.SaleCut(royaltyReceiver, saleItemPrice * value))
+            totalRoyaltiesRate = totalRoyaltiesRate + value
         }
+
 
         let saleCut = NFTStorefront.SaleCut(
             receiver: self.flowReceiver,

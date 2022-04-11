@@ -57,11 +57,11 @@ export const getItemSupply = async () => {
  * @throws Will throw an error if execution will be halted
  * @returns {Promise<*>}
  * */
-export const mintItem = async (recipient, metadata, royalties) => {
+export const mintItem = async (recipient, metadata) => {
 	const Admin = await getAdminAddress();
 
 	const name = "items/mint_item";
-	const args = [recipient, metadata, royalties];
+	const args = [recipient, metadata];
 	const signers = [Admin];
 
 	return sendTransactionWithErrorRaised({ name, args, signers });
@@ -138,9 +138,9 @@ export const getItemMetadata = async (account, itemId) => {
 };
 
 
-export const getItemRoyalties = async (account, itemId) => {
-	const name = "../scripts/items/get_item_royalties";
-	const args = [account, itemId]
+// export const getItemRoyalties = async (account, itemId) => {
+// 	const name = "../scripts/items/get_item_royalties";
+// 	const args = [account, itemId]
 
-	return executeScriptWithErrorRaised({ name, args});
-};
+// 	return executeScriptWithErrorRaised({ name, args});
+// };

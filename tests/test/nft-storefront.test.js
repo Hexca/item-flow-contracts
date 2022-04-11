@@ -76,14 +76,13 @@ describe("NFT Storefront", () => {
 		const Alice = await getAccountAddress("Alice");
 		await setupStorefrontOnAccount(Alice);
 
-		const royalties = {}
 
 		// Mint Item for Alice's account
-		await shallPass(mintItem(Alice, metadata, royalties));
+		await shallPass(mintItem(Alice, metadata));
 
 		const itemID = 0;
 
-		await shallPass(createListing(Alice, itemID, toUFix64(1.11)));
+		await shallPass(createListing(Alice, itemID, toUFix64(1.11), {}));
 	});
 
 	it("should be able to accept a listing", async () => {
@@ -94,9 +93,7 @@ describe("NFT Storefront", () => {
 		const Alice = await getAccountAddress("Alice");
 		await setupStorefrontOnAccount(Alice);
 
-		const royalties = {}
-
-		await mintItem(Alice, metadata, royalties);
+		await mintItem(Alice, metadata);
 
 		const itemId = 0;
 
@@ -107,7 +104,7 @@ describe("NFT Storefront", () => {
 		await shallPass(mintFlow(Bob, toUFix64(100)));
 
 		// Bob shall be able to buy from Alice
-		const sellItemTransactionResult = await shallPass(createListing(Alice, itemId, toUFix64(1.11)));
+		const sellItemTransactionResult = await shallPass(createListing(Alice, itemId, toUFix64(1.11), {}));
 
 		const listingAvailableEvent = sellItemTransactionResult.events[0];
 		const listingResourceID = listingAvailableEvent.data.listingResourceID;
@@ -136,7 +133,7 @@ describe("NFT Storefront", () => {
 		await getItem(Alice, itemId);
 
 		// Listing item for sale shall pass
-		const sellItemTransactionResult = await shallPass(createListing(Alice, itemId, toUFix64(1.11)));
+		const sellItemTransactionResult = await shallPass(createListing(Alice, itemId, toUFix64(1.11), {}));
 
 		const listingAvailableEvent = sellItemTransactionResult.events[0];
 		const listingResourceID = listingAvailableEvent.data.listingResourceID;
@@ -169,7 +166,7 @@ describe("NFT Storefront", () => {
 
 		const itemID = 0;
 
-		await shallPass(createListing(Alice, itemID, toUFix64(1.11)));
+		await shallPass(createListing(Alice, itemID, toUFix64(1.11), obj));
 	});
 
 	it("should be able to accept a listing with roylaties", async () => {
@@ -187,9 +184,7 @@ describe("NFT Storefront", () => {
 			[Charlie, 0.1]
 		]);
 		
-		const obj = Object.fromEntries(entries);
-
-		await mintItem(Alice, metadata, obj);
+		await mintItem(Alice, metadata);
 
 		const itemId = 0;
 
@@ -199,8 +194,10 @@ describe("NFT Storefront", () => {
 
 		await shallPass(mintFlow(Bob, toUFix64(100)));
 
+		const obj = Object.fromEntries(entries);
+
 		// Bob shall be able to buy from Alice
-		const sellItemTransactionResult = await shallPass(createListing(Alice, itemId, toUFix64(1)));
+		const sellItemTransactionResult = await shallPass(createListing(Alice, itemId, toUFix64(1), obj));
 
 		const listingAvailableEvent = sellItemTransactionResult.events[0];
 		const listingResourceID = listingAvailableEvent.data.listingResourceID;

@@ -8,7 +8,7 @@ pub contract Items: NonFungibleToken {
     pub event ContractInitialized()
     pub event Withdraw(id: UInt64, from: Address?)
     pub event Deposit(id: UInt64, to: Address?)
-    pub event Minted(id: UInt64, metadata:{String:String}, royalties: [Items.Royalty])
+    pub event Minted(id: UInt64, metadata:{String:String})
 
     // Named Paths
     //
@@ -38,12 +38,12 @@ pub contract Items: NonFungibleToken {
         pub let id: UInt64
 
         access(self) let metadata: {String:String}
-        access(self) let royalties: [Items.Royalty]
+        // access(self) let royalties: [Items.Royalty]
 
-        init(id: UInt64, metadata: {String:String}, royalties: [Items.Royalty]) {
+        init(id: UInt64, metadata: {String:String}) {
             self.id = id
             self.metadata = metadata
-            self.royalties = royalties
+            // self.royalties = royalties
         }
 
         pub fun getMetadata(): {String: String} {
@@ -54,9 +54,9 @@ pub contract Items: NonFungibleToken {
             return self.metadata[key]!
         }
 
-        pub fun getRoyalties(): [Items.Royalty] {
-            return self.royalties
-        }
+        // pub fun getRoyalties(): [Items.Royalty] {
+        //     return self.royalties
+        // }
 
         pub fun getViews(): [Type] {
             return [
@@ -211,16 +211,14 @@ pub contract Items: NonFungibleToken {
         //
         pub fun mintNFT(
             recipient: &{NonFungibleToken.CollectionPublic}, 
-            metadata: {String:String},
-            royalties: [Items.Royalty]
+            metadata: {String:String}
         ) {
             // deposit it in the recipient's account using their reference
-            recipient.deposit(token: <-create Items.NFT(id: Items.totalSupply, metadata:metadata, royalties:royalties))
+            recipient.deposit(token: <-create Items.NFT(id: Items.totalSupply, metadata:metadata))
 
             emit Minted(
                 id: Items.totalSupply,
-                metadata:metadata,
-                royalties:royalties
+                metadata:metadata
             )
 
             Items.totalSupply = Items.totalSupply + 1
