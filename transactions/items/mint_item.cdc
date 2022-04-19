@@ -14,7 +14,6 @@ transaction(recipient: Address, metadata: {String:String}) {
 
     // local variable for storing the minter reference
     let minter: &Items.NFTMinter
-    // let royalties: [Items.Royalty]
 
     prepare(signer: AuthAccount) {
 
@@ -41,13 +40,6 @@ transaction(recipient: Address, metadata: {String:String}) {
             self.minter = _minter!
         }
 
-        // self.royalties = [Items.Royalty(address: signer.address, rate: 0.1)]
-        // self.royalties = []
-        // for key in royaltiesMap.keys {
-        //     let value = royaltiesMap[key]!
-        //     self.royalties.append(Items.Royalty(address: key, rate: value))
-        // }
-
     }
 
     execute {
@@ -64,7 +56,6 @@ transaction(recipient: Address, metadata: {String:String}) {
         self.minter.mintNFT(
             recipient: receiver,
             metadata:metadata,
-            // royalties:self.royalties,
         )
     }
 }
