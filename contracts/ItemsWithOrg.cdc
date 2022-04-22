@@ -18,6 +18,16 @@ pub contract ItemsWithOrg: NonFungibleToken {
     pub let MinterPublicPath: PublicPath
 
 
+    pub struct Royalty {
+        pub let address: Address
+        pub let rate: UFix64
+
+        init(address: Address, rate: UFix64) {
+            self.address = address
+            self.rate = rate
+        }
+    }
+
     // totalSupply
     // The total number of ItemsWithOrg that have been minted
     //

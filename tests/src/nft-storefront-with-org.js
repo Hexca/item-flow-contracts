@@ -49,7 +49,7 @@ export const setupStorefrontOnAccount = async (account) => {
  * @returns {Promise<*>}
  * */
 export const createListing = async (seller, itemId, price, royalties) => {
-	const name = "nftStorefront/create_listing";
+	const name = "nftStorefront/create_org_listing";
 	const args = [itemId, price, royalties];
 	const signers = [seller];
 
@@ -65,7 +65,7 @@ export const createListing = async (seller, itemId, price, royalties) => {
  * @returns {Promise<*>}
  * */
 export const purchaseListing = async (buyer, resourceId, seller) => {
-	const name = "nftStorefront/purchase_listing";
+	const name = "nftStorefront/purchase_org_listing";
 	const args = [resourceId, seller];
 	const signers = [buyer];
 

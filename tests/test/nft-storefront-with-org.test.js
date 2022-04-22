@@ -26,7 +26,7 @@ import {
 	setupStorefrontOnAccount,
 	getListingCount,
 	getFlowBalance,
-} from "../src/nft-storefront";
+} from "../src/nft-storefront-with-org";
 
 // We need to set timeout for a higher number, because some transactions might take up some time
 jest.setTimeout(500000);
