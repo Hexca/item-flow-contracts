@@ -157,7 +157,7 @@ describe("NFT Storefront", () => {
 		await setupStorefrontOnAccount(Charlie);
 
 		const entries = new Map([
-			[Charlie, 0.1]
+			[Charlie, "0.1"]
 		]);
 		
 		const obj = Object.fromEntries(entries);
@@ -183,7 +183,7 @@ describe("NFT Storefront", () => {
 		await setupStorefrontOnAccount(Charlie);
 
 		const entries = new Map([
-			[Charlie, 0.1]
+			[Charlie, "0.1"]
 		]);
 		
 		await mintItem(Alice, metadata);
