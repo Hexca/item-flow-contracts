@@ -8,7 +8,7 @@ pub struct Item {
   pub let imageURL: String
   pub let maxQuantity: String
   pub var royaltyPercentage: String?
-  pub let orgAccount: address
+  pub let orgAccount: Address
   
   pub let itemID: UInt64
   pub let owner: Address
@@ -17,7 +17,7 @@ pub struct Item {
     itemID: UInt64,
     owner: Address,
     metadata: {String:String},
-    orgAccount: address
+    orgAccount: Address
   ) {
     self.itemID = itemID
     self.owner = owner
@@ -56,7 +56,7 @@ pub fun main(address: Address, itemID: UInt64): Item? {
         let display = view as! MetadataViews.Display
         
         let owner: Address = item.owner!.address!
-        let orgAccount: address = item.orgAccount!
+        let orgAccount: Address = item.orgAccount!
 
         // let ipfsThumbnail = display.thumbnail as! MetadataViews.IPFSFile     
 

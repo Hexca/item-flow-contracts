@@ -4,7 +4,7 @@ import {
 	deployContractByNameWithErrorRaised 
 } from "./common"
 import { getAdminAddress } from "./common";
-import { deployItems, setupItemsOnAccount } from "./items";
+import { deployItems, setupItemsOnAccount } from "./items-with-org";
 
 /*
  * Deploys Items and NFTStorefront contracts to Admin.
