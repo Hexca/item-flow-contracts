@@ -1,4 +1,6 @@
 import path from "path";
+import * as sdk from "@onflow/sdk"
+import * as t from "@onflow/types"
 
 import { 
 	emulator,
@@ -82,7 +84,7 @@ describe("NFT Storefront", () => {
 
 		const itemID = 0;
 
-		await shallPass(createListing(Alice, itemID, toUFix64(1.11), {}));
+		await shallPass(createListing(Alice, itemID, "1.11", {}));
 	});
 
 	it("should be able to accept a listing", async () => {
@@ -104,7 +106,7 @@ describe("NFT Storefront", () => {
 		await shallPass(mintFlow(Bob, toUFix64(100)));
 
 		// Bob shall be able to buy from Alice
-		const sellItemTransactionResult = await shallPass(createListing(Alice, itemId, toUFix64(1.11), {}));
+		const sellItemTransactionResult = await shallPass(createListing(Alice, itemId, "1.11", {}));
 
 		const listingAvailableEvent = sellItemTransactionResult.events[0];
 		const listingResourceID = listingAvailableEvent.data.listingResourceID;
@@ -133,7 +135,7 @@ describe("NFT Storefront", () => {
 		await getItem(Alice, itemId);
 
 		// Listing item for sale shall pass
-		const sellItemTransactionResult = await shallPass(createListing(Alice, itemId, toUFix64(1.11), {}));
+		const sellItemTransactionResult = await shallPass(createListing(Alice, itemId, "1.11", {}));
 
 		const listingAvailableEvent = sellItemTransactionResult.events[0];
 		const listingResourceID = listingAvailableEvent.data.listingResourceID;
@@ -166,7 +168,7 @@ describe("NFT Storefront", () => {
 
 		const itemID = 0;
 
-		await shallPass(createListing(Alice, itemID, toUFix64(1.11), obj));
+		await shallPass(createListing(Alice, itemID, "1.11", obj));
 	});
 
 	it("should be able to accept a listing with roylaties", async () => {
@@ -192,12 +194,12 @@ describe("NFT Storefront", () => {
 		const Bob = await getAccountAddress("Bob");
 		await setupStorefrontOnAccount(Bob);
 
-		await shallPass(mintFlow(Bob, toUFix64(100)));
+		await shallPass(mintFlow(Bob, 100));
 
 		const obj = Object.fromEntries(entries);
 
 		// Bob shall be able to buy from Alice
-		const sellItemTransactionResult = await shallPass(createListing(Alice, itemId, toUFix64(1), obj));
+		const sellItemTransactionResult = await shallPass(createListing(Alice, itemId, "1", obj));
 
 		const listingAvailableEvent = sellItemTransactionResult.events[0];
 		const listingResourceID = listingAvailableEvent.data.listingResourceID;
