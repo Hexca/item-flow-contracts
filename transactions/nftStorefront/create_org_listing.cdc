@@ -1,7 +1,7 @@
 import FungibleToken from "../../contracts/FungibleToken.cdc"
 import NonFungibleToken from "../../contracts/NonFungibleToken.cdc"
 import FlowToken from "../../contracts/FlowToken.cdc"
-import Items from "../../contracts/Items.cdc"
+import ItemsWithOrg from "../../contracts/ItemsWithOrg.cdc"
 import NFTStorefront from "../../contracts/NFTStorefront.cdc"
 
 pub fun getOrCreateStorefront(account: AuthAccount): &NFTStorefront.Storefront {
@@ -23,31 +23,31 @@ pub fun getOrCreateStorefront(account: AuthAccount): &NFTStorefront.Storefront {
 transaction(saleItemID: UInt64, saleItemPrice: UFix64, royaltiesMap: {Address:UFix64}) {
 
     let flowReceiver: Capability<&FlowToken.Vault{FungibleToken.Receiver}>
-    let ItemsProvider: Capability<&Items.Collection{Items.ItemsCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>
+    let ItemsWithOrgProvider: Capability<&ItemsWithOrg.Collection{ItemsWithOrg.ItemsWithOrgCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>
     let storefront: &NFTStorefront.Storefront
     let saleCuts: [NFTStorefront.SaleCut]
 
     prepare(account: AuthAccount) {
         // We need a provider capability, but one is not provided by default so we create one if needed.
-        let ItemsCollectionProviderPrivatePath = /private/ItemsCollectionProvider
+        let ItemsWithOrgCollectionProviderPrivatePath = /private/ItemsWithOrgCollectionProvider
 
         self.flowReceiver = account.getCapability<&FlowToken.Vault{FungibleToken.Receiver}>(/public/flowTokenReceiver)!
 
         assert(self.flowReceiver.borrow() != nil, message: "Missing or mis-typed FLOW receiver")
 
-        if !account.getCapability<&Items.Collection{Items.ItemsCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>(ItemsCollectionProviderPrivatePath)!.check() {
-            account.link<&Items.Collection{Items.ItemsCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>(ItemsCollectionProviderPrivatePath, target: Items.CollectionStoragePath)
+        if !account.getCapability<&ItemsWithOrg.Collection{ItemsWithOrg.ItemsWithOrgCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>(ItemsWithOrgCollectionProviderPrivatePath)!.check() {
+            account.link<&ItemsWithOrg.Collection{ItemsWithOrg.ItemsWithOrgCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>(ItemsWithOrgCollectionProviderPrivatePath, target: ItemsWithOrg.CollectionStoragePath)
         }
 
-        self.ItemsProvider = account.getCapability<&Items.Collection{Items.ItemsCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>(ItemsCollectionProviderPrivatePath)!
+        self.ItemsWithOrgProvider = account.getCapability<&ItemsWithOrg.Collection{ItemsWithOrg.ItemsWithOrgCollectionPublic, NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>(ItemsWithOrgCollectionProviderPrivatePath)!
 
-        assert(self.ItemsProvider.borrow() != nil, message: "Missing or mis-typed Items.Collection provider")
+        assert(self.ItemsWithOrgProvider.borrow() != nil, message: "Missing or mis-typed ItemsWithOrg.Collection provider")
 
         self.storefront = getOrCreateStorefront(account: account)
 
         self.saleCuts = []
 
-        // self.nft = self.ItemsProvider.borrow()!.borrowItem(id: saleItemID)
+        // self.nft = self.ItemsWithOrgProvider.borrow()!.borrowItem(id: saleItemID)
 
         // let royalties = self.nft!.getRoyalties();
         var totalRoyaltiesRate = 0.0;
@@ -70,8 +70,8 @@ transaction(saleItemID: UInt64, saleItemPrice: UFix64, royaltiesMap: {Address:UF
 
     execute {        
         self.storefront.createListing(
-            nftProviderCapability: self.ItemsProvider,
-            nftType: Type<@Items.NFT>(),
+            nftProviderCapability: self.ItemsWithOrgProvider,
+            nftType: Type<@ItemsWithOrg.NFT>(),
             nftID: saleItemID,
             salePaymentVaultType: Type<@FlowToken.Vault>(),
             saleCuts: self.saleCuts

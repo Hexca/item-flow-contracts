@@ -10,12 +10,17 @@ of traditional payments infrastructure and custodial wallets.
 
 | Contract     | Testnet              | Mainnet              |
 |--------------|----------------------|----------------------|
-| Items        | `0xb89a588dd5e7f810` | `TBD`                |
+| Items        | `0x9cd0adb2d2a239ae` | `TBD`                |
+| ItemsWithOrg | `0x9cd0adb2d2a239ae` | `TBD`                |
 
 ## Contracts
 
-`Items`: The main contract for creating NFTs, it's derived from [KittyItems](https://github.com/onflow/kitty-items), the main change is it makes the `NFTMinter` resource public, and adds a public function `CreateNFTMinter`.
+`Items`: The main contract for creating NFTs, it's derived from
+[KittyItems](https://github.com/onflow/kitty-items), the main change is it
+makes the `NFTMinter` resource public, and adds a public function `CreateNFTMinter`.
 
+`ItemsWithOrg`: Is similar to `Items` with the addition that the `NFTMinter`
+resource is owned, and the creator's address is included in the `Minted` event.
 
 
 # Development
@@ -37,3 +42,8 @@ Run from the `./tests` directory:
 ```
 $ yarn test
 ```
+
+
+## Deploy contracts
+cd tests
+flow accounts add-contract ItemsWithOrg ../contracts/ItemsWithOrg.cdc --signer testnet-dev-account --network testnet
