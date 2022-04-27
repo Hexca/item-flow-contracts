@@ -37,3 +37,8 @@ Run from the `./tests` directory:
 ```
 $ yarn test
 ```
+
+
+## Deploy contracts
+cd tests
+flow accounts add-contract ItemsWithOrg ../contracts/ItemsWithOrg.cdc --signer testnet-dev-account --network testnet

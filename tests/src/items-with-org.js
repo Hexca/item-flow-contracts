@@ -4,7 +4,7 @@ import {
 	executeScriptWithErrorRaised, 
 	deployContractByNameWithErrorRaised 
 } from "./common"
-import { getAdminAddress } from "./common";
+import { getAdminAddress, getOrgAddress } from "./common";
 
 /*
  * Deploys NonFungibleToken and Items contracts to Admin.
@@ -23,7 +23,7 @@ export const deployItems = async () => {
 		MetadataViews: Admin,
 	};
 	
-	return deployContractByNameWithErrorRaised({ to: Admin, name: "Items", addressMap });
+	return deployContractByNameWithErrorRaised({ to: Admin, name: "ItemsWithOrg", addressMap });
 };
 
 /*
@@ -33,7 +33,7 @@ export const deployItems = async () => {
  * @returns {Promise<*>}
  * */
 export const setupItemsOnAccount = async (account) => {
-	const name = "items/setup_account";
+	const name = "itemsWithOrg/setup_account";
 	const signers = [account];
 
 	return sendTransactionWithErrorRaised({ name, signers });
@@ -45,7 +45,7 @@ export const setupItemsOnAccount = async (account) => {
  * @returns {UInt64} - number of NFT minted so far
  * */
 export const getItemSupply = async () => {
-	const name = "../scripts/items/get_items_supply";
+	const name = "../scripts/itemsWithOrg/get_items_supply";
 
 	return executeScriptWithErrorRaised({ name });
 };
@@ -60,9 +60,11 @@ export const getItemSupply = async () => {
 export const mintItem = async (recipient, metadata) => {
 	const Admin = await getAdminAddress();
 
-	const name = "items/mint_item";
+	const OrgAccount = await getOrgAddress("org"); // for testing purposes
+
+	const name = "itemsWithOrg/mint_item";
 	const args = [recipient, metadata];
-	const signers = [Admin];
+	const signers = [Admin, OrgAccount];
 
 	return sendTransactionWithErrorRaised({ name, args, signers });
 };
@@ -76,23 +78,8 @@ export const mintItem = async (recipient, metadata) => {
  * @returns {Promise<*>}
  * */
 export const transferItem = async (sender, recipient, itemId) => {
-	const name = "items/transfer_item";
+	const name = "itemsWithOrg/transfer_item";
 	const args = [recipient, itemId];
-	const signers = [sender];
-
-	return sendTransactionWithErrorRaised({ name, args, signers });
-};
-
-/*
- * Modify an Item's metadata with id equal **itemId** from **sender** account
- * @param {string} sender - sender address
- * @param {UInt64} itemId - id of the item to transfer
- * @throws Will throw an error if execution will be halted
- * @returns {Promise<*>}
- * */
-export const modifyItemMetadata = async (sender, itemId) => {
-	const name = "items/modify_item_metadata";
-	const args = [itemId];
 	const signers = [sender];
 
 	return sendTransactionWithErrorRaised({ name, args, signers });
@@ -106,7 +93,7 @@ export const modifyItemMetadata = async (sender, itemId) => {
  * @returns {UInt64}
  * */
 export const getItem = async (account, itemID) => {
-	const name = "../scripts/items/get_item";
+	const name = "../scripts/itemsWithOrg/get_item";
 	const args = [account, itemID];
 
 	return executeScriptWithErrorRaised({ name, args });
@@ -119,7 +106,7 @@ export const getItem = async (account, itemID) => {
  * @returns {UInt64}
  * */
 export const getItemCount = async (account) => {
-	const name = "../scripts/items/get_collection_length";
+	const name = "../scripts/itemsWithOrg/get_collection_length";
 	const args = [account];
 
 	return executeScriptWithErrorRaised({ name, args });
@@ -131,7 +118,7 @@ export const getItemCount = async (account) => {
  * @returns {String:String} - metadata for that item
  * */
 export const getItemMetadata = async (account, itemId) => {
-	const name = "../scripts/items/get_item_metadata";
+	const name = "../scripts/itemsWithOrg/get_item_metadata";
 	const args = [account, itemId]
 
 	return executeScriptWithErrorRaised({ name, args});
@@ -139,7 +126,7 @@ export const getItemMetadata = async (account, itemId) => {
 
 
 // export const getItemRoyalties = async (account, itemId) => {
-// 	const name = "../scripts/items/get_item_royalties";
+// 	const name = "../scripts/itemsWithOrg/get_item_royalties";
 // 	const args = [account, itemId]
 
 // 	return executeScriptWithErrorRaised({ name, args});

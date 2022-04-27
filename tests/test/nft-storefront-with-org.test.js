@@ -1,7 +1,7 @@
 import path from "path";
+
 import * as sdk from "@onflow/sdk"
 import * as t from "@onflow/types"
-
 import { 
 	emulator,
 	init,
@@ -19,9 +19,7 @@ import {
 	getItemCount,
 	mintItem,
 	getItem,
-	types,
-	rarities,
-} from "../src/items";
+} from "../src/items-with-org";
 import {
 	deployNFTStorefront,
 	createListing,
@@ -30,7 +28,7 @@ import {
 	setupStorefrontOnAccount,
 	getListingCount,
 	getFlowBalance,
-} from "../src/nft-storefront";
+} from "../src/nft-storefront-with-org";
 
 // We need to set timeout for a higher number, because some transactions might take up some time
 jest.setTimeout(500000);
@@ -45,7 +43,7 @@ const metadata = {
 
 
 
-describe("NFT Storefront", () => {
+describe("NFT With Org Storefront", () => {
 	beforeEach(async () => {
 		const basePath = path.resolve(__dirname, "../../");
 		const port = 7003;
@@ -103,7 +101,7 @@ describe("NFT Storefront", () => {
 		const Bob = await getAccountAddress("Bob");
 		await setupStorefrontOnAccount(Bob);
 
-		await shallPass(mintFlow(Bob, toUFix64(100)));
+		await shallPass(mintFlow(Bob, 100));
 
 		// Bob shall be able to buy from Alice
 		const sellItemTransactionResult = await shallPass(createListing(Alice, itemId, "1.11", {}));

@@ -8,6 +8,8 @@ export const toUFix64 = (value) => value.toFixed(UFIX64_PRECISION);
 
 export const getAdminAddress = async () => getAccountAddress("ItemAdmin");
 
+export const getOrgAddress = async (orgName) => getAccountAddress(orgName);
+
 export const sendTransactionWithErrorRaised = async (...props) => {
     const [resp, err] = await sendTransaction(...props);
     if (err) {

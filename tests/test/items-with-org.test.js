@@ -22,8 +22,7 @@ import {
 	transferItem,
 	getItemMetadata,
 	modifyItemMetadata,
-	getItemRoyalties,
-} from "../src/items";
+} from "../src/items-with-org";
 
 // We need to set timeout for a higher number, because some transactions might take up some time
 jest.setTimeout(50000);
@@ -36,7 +35,7 @@ const metadata = {
 	"royalty": "10",
 };
 
-describe("Items", () => {
+describe("Items With Org", () => {
 	// Instantiate emulator and path to Cadence files
 	beforeEach(async () => {
 		const basePath = path.resolve(__dirname, "../../");
@@ -52,7 +51,7 @@ describe("Items", () => {
 		return await new Promise(r => setTimeout(r, 1000));
 	});
 
-	it("should deploy Items contract", async () => {
+	it("should deploy ItemsWithOrg contract", async () => {
 		await deployItems();
 	});
 

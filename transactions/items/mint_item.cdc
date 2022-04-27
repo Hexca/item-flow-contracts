@@ -1,7 +1,6 @@
-import NonFungibleToken from 0xNonFungibleToken
-import Items from 0xItems
-
-import FungibleToken from 0xFungibleToken
+import NonFungibleToken from "../../contracts/NonFungibleToken.cdc"
+import Items from "../../contracts/Items.cdc"
+import FungibleToken from "../../contracts/FungibleToken.cdc"
 
 // This transction uses the NFTMinter resource to mint a new NFT.
 
@@ -40,6 +39,7 @@ transaction(recipient: Address, metadata: {String:String}) {
         } else {
             self.minter = _minter!
         }
+
     }
 
     execute {
